@@ -15,6 +15,6 @@ In production deployments, the following points should be considered:
  - monitoring
 
 In other words, here we prioritize didactic value over production readiness.
-See also http://github.com/dai-deployment-templates for production ready deployment
-templates.
+See also http://github.com/h2oai/dai-deployment-templates for production ready
+deployment templates.
 
