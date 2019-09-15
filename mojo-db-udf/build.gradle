@@ -1,0 +1,47 @@
+plugins {
+    // Apply the java plugin to add support for Java
+    id 'java'
+
+    // Apply the application plugin to add support for building an application
+    id 'application'
+}
+
+description = "H2O DAI Mojo Database Scoring ${version}"
+
+repositories {
+    // Use jcenter for resolving your dependencies.
+    // You can declare any Maven/Ivy/file repository here.
+    jcenter()
+}
+
+dependencies {
+    // A lightweight cmd line interface
+    implementation "info.picocli:picocli:4.0.1"
+    // Logging
+    implementation "org.apache.logging.log4j:log4j-api:${slf4jVersion}"
+    implementation "org.apache.logging.log4j:log4j-core:${slf4jVersion}"
+    implementation "org.apache.logging.log4j:log4j-slf4j-impl:${slf4jVersion}"
+    // MOJO2 Runtime
+    implementation "ai.h2o:mojo2-runtime-api:${mojoVersion}"
+    implementation "ai.h2o:mojo2-runtime-impl:${mojoVersion}"
+    // Config library
+    implementation "com.typesafe:config:${configVersion}"
+
+    // Use JUnit test framework
+    testImplementation 'junit:junit:4.12'
+    testImplementation 'com.h2database:h2:1.4.199'
+}
+
+application {
+    mainClassName = "ai.h2o.mojos.db.MojoDbScorer"
+}
+
+installDist {
+    into file("${projectDir}/dist/${project.name}")
+}
+
+clean {
+    delete file("${projectDir}/dist")
+}
+
+build.dependsOn installDist
