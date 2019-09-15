@@ -34,10 +34,22 @@ dependencies {
 
 application {
     mainClassName = "ai.h2o.mojos.db.MojoDbScorer"
+    applicationName = "dbscorer"
 }
 
 installDist {
     into file("${projectDir}/dist/${project.name}")
+}
+
+distributions {
+    main {
+        contents {
+            from('config') {
+                into 'config'
+            }
+        }
+    }
+    
 }
 
 clean {
