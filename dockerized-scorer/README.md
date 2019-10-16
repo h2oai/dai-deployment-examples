@@ -10,7 +10,7 @@ The steps here allow one to deploy a DAI model (scorer) as a dockerized http ser
 1.  once trained, click on "DOWNLOAD PYTHON SCORING PIPELINE" This will store a `scorer.zip` file
 1.  run `build_scorer_docker.sh` as in this example
 
-    ```bash
+    ```
     $ ./dai-deployment-examples/dockerized-scorer/build_scorer_docker.sh ~/Downloads/scorer.zip myimage my-version
     building  myimage:my-version in /var/folders/33/28l9l21n7d3f4h2pswyqqjt00000gn/T/scorer_temp.mIV517QJ
     Sending build context to Docker daemon  396.2MB
