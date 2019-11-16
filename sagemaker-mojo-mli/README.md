@@ -1,6 +1,6 @@
 # Sagemaker MOJO and MLI Scoring
 
-This is an example of getting predictions and reason codes at the same time from Amazon Sagemaker.
+This is an example of getting single row predictions and reason codes at the same time from Amazon Sagemaker.
 The example assumes you have the following from Driverless AI:
 
 -  `mojo.zip` from a completed experiment (to get predictions)
@@ -83,3 +83,4 @@ aws s3 cp model_artifacts.tar.gz s3://<your-bucket>/
 
 Create the appropriate model and endpoint on Sagemaker, using the inference image and model artifacts. You can check that the endpoint is available with `aws sagemaker list-endpoints`.
 
+See the `examples` directory for examples of making a request to Sagemaker.
