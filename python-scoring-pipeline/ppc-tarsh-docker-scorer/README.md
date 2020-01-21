@@ -25,10 +25,11 @@ top-dir: A directory with the below structure. Name can be anything. This is the
 - README.md: This file with the details you are reading
 - Dockerfile: The docker image build script
 - payload: A directory that contains files to be used in the docker container for deployment
-    - dai-<version number>-linux-ppc64le.sh: The Driverless AI TAR SH installer. (You can download the correct version for your scoring pipeline here: https://www.h2o.ai/download/#driverless-ai)
+    - dai-<version number>-linux-ppc64le.sh: The Driverless AI TAR SH installer. (You need to put this file here, you can download the correct version for your scoring pipeline here: https://www.h2o.ai/download/#driverless-ai)
     - scorer.zip: The Driverless AI python scoring pipeline. (You need to put this file here)
     - license.sig: Valid Driverless AI license file. (You need to provide your license file here)
 ```
+
 
 Instructions
 ------------
@@ -42,10 +43,9 @@ Instructions
     - Create a CentOS 7 based docker container 
     - Install required dependencies, python etc..
     - Create a virtual environment for the scoring pipeline by installing all needed dependencies
-    - Run `example.py` from the scoring pipeline
-
-As part of the build process you will see the scores being produced for the test data in `example.py`. This example
+7. Run the `example.py` script in `scorer.zip` with `docker run --rm tarsh-scorer`. You will see the scores being produced for the test data in `example.py`. This example
 shows how to use DAI python scoring pipeline as a python module. There are other options like HTTP service and TCP service that can be created too.
+
 
 Disclaimer
 ----------
