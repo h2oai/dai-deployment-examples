@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html style="padding:20px">
+<head>
+  <meta charset="utf-8">
+  <title>DriverlessAI - Create Dataset</title>
+
+  <script type="text/javascript">
+    document.write('<link rel="import" href="' + window.Alteryx.LibDir + '2/lib/includes.html">');
+  </script>
+</head>
+<body>
+  <form>
+    <fieldset>
+      <legend class='blueTitle'>XMSG("Create Dataset in Driverless AI")</legend>
+      <div class='leftCon'>
+        <label>XMSG("DriverlessAI Server Address")</label>
+        <ayx data-ui-props="{type: 'TextBox'}" data-item-props="{dataName: 'Address'}"></ayx>
+      </div>
+      <div class='leftCon'>
+        <label>XMSG("Use HTTPS")</label>
+        <ayx data-ui-props="{type: 'CheckBox'}" data-item-props="{dataName: 'UseHttps'}"></ayx>
+      </div>
+      <div class='leftCon'>
+        <label>XMSG("Username")</label>
+        <ayx data-ui-props="{type: 'TextBox'}" data-item-props="{dataName: 'Username'}"></ayx>
+      </div>
+      <div class='leftCon'>
+        <label>XMSG("Password")</label>
+        <ayx data-ui-props="{type: 'TextBox'}" data-item-props="{dataName: 'Password', password: true, encryptionMode: 'machine'}"></ayx>
+      </div>
+      <div class='leftCon'>
+        <label>XMSG("Data Import Source")</label>
+        <ayx data-ui-props="{type: 'DropDown', widgetId: 'DataSourceDropdown'}" data-item-props="{dataName: 'DataImportSource'}"></ayx>
+      </div>
+      <div class='leftCon'>
+        <label><span id="filepathText">XMSG("Data Location")</span></label>
+          <ayx data-ui-props="{type: 'TextBox'}" data-item-props="{dataName: 'DataLocation'}"></ayx>
+      </div>
+      <div class='leftCon'>
+        <label>XMSG("Generate Automatic Visualizations")</label>
+        <ayx data-ui-props="{type: 'CheckBox'}" data-item-props="{dataName: 'DoAutoViz'}"></ayx>
+      </div>
+      <div class='leftCon' id='displaybrowser'>
+        <label>XMSG("Display Visualizations in Popup Browser")</label>
+        <ayx data-ui-props="{type: 'CheckBox'}" data-item-props="{dataName: 'DisplayBrowser'}"></ayx>
+      </div>
+    </fieldset>
+  </form>
+
+  <script type="text/javascript" src="DAICreateDataset.js">
+
+  </script>
+
+  <style>
+    .blueTitle {
+      background-color: #e5e5e5;
+    }
+  </style>
+</body>
+</html>

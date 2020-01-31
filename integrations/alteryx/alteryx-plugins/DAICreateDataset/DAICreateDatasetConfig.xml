@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<AlteryxJavaScriptPlugin>
+  <EngineSettings EngineDll="Python" EngineDllEntryPoint="DAICreateDataset.py" SDKVersion="10.1" />
+  <GuiSettings Html="DAICreateDataset.html" Icon="h2o_new_border.png" Help="https://help.alteryx.com/developer/current/index.htm#Python/Examples.htm" SDKVersion="10.1">
+    <InputConnections>
+      <Connection Name="Input" AllowMultiple="False" Optional="True" Type="Connection" Label="I"/>
+    </InputConnections>
+    <OutputConnections>
+      <Connection Name="Dataset" AllowMultiple="False" Optional="True" Type="Connection" Label="D"/>
+    </OutputConnections>
+    
+  </GuiSettings>
+  <Properties>
+    <MetaInfo>
+      <Name>DriverlessAI Visualizations</Name>
+      <Description>
+        Create a dataset within Driverless AI, and optionally generate automatic visualizations.
+These datasets can be consumed by other functions of Driverless AI such as training/predictions.
+This is the primary method of getting data into Driverless AI.
+      </Description>
+      <CategoryName>Predictive</CategoryName>
+      <SearchTags>driverlessai, driverless, h2o, machine learning, learning</SearchTags>
+      <ToolVersion>1.1</ToolVersion>
+      <Author>H2O.AI</Author>
+      <Company>H2O.AI</Company>
+      <Copyright>2019</Copyright>
+    </MetaInfo>
+  </Properties>
+</AlteryxJavaScriptPlugin>
+
