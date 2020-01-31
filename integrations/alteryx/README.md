@@ -1,7 +1,17 @@
 # Alteryx Tool
 Integration with Alteryx using HTML Plugins
 
-## Steps to Publish:
+Note: This integration was originally written for Driverless AI release version 1.8.0, using the python client associated with that specific release. It is highly likely that future releases 1.8.1+ will require code changes to work properly. See below for further information. 
+
+## Making Code Changes
+
+To make changes to the code for functionality past 1.8.0 open a code editor. It is recommended to use an IDE such as pycharm or vscode with a python environment having the release specific Driverless AI python client installed. This will help with identifying the locations where new parameters are required by the Driverless AI python client
+
+Search for the following code snippet: `self.dai`. This points to the initialized Driverless AI python client within the Alteryx frameworks. All the work done by Driverless AI would be initiated via calls from this object.
+
+Add any necessary code changes, and save the file. Then follow the below steps to generate a new Alteryx .yxi to install the plugins to a running Alteryx. 
+
+## Steps for Installing to Alteryx:
 How to generate `.yxi` plugin for Alteryx. Take note of project directory structure.
 
 Required Directory Structure:
