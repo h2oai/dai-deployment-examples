@@ -50,7 +50,6 @@ public class MojoScoringInterface {
         }
     }
 
-    // Utility functions for local transformations
     private MojoFrame generateInputMojoFrame(MojoPipeline mojo, MojoFrameMeta mojoFrameMeta, String[] rowArray) {
         MojoFrameBuilder mojoFrameBuilder = mojo.getInputFrameBuilder();
         MojoRowBuilder mojoRowBuilder = mojoFrameBuilder.getMojoRowBuilder();
@@ -72,7 +71,6 @@ public class MojoScoringInterface {
         return gson.toJson(jsonObject);
     }
 
-    // Utility functions for transformations against REST server
     private HttpURLConnection getRestRequest(String restRequest) throws IOException {
         HttpURLConnection conn = null;
         try {
@@ -97,22 +95,20 @@ public class MojoScoringInterface {
 
     private String handleRestResponse(HttpURLConnection conn) throws IOException {
         String output = "";
-        BufferedReader br = null;
-        try {
+        try (
+            BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()))
+        ) {
             if (conn.getResponseCode() != 200) {
                 return "ERROR: " + conn.getResponseMessage();
             }
-            br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
             String nextLine;
             while ((nextLine = br.readLine()) != null) {
                 output = nextLine;
             }
-        } catch (IOException e){
+        } catch (IOException e) {
             System.out.println("IO Exception at handleRestResponse:");
             System.out.println(e.getMessage());
             throw e;
-        } finally {
-            br.close();
         }
         return output;
     }

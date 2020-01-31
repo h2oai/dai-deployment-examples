@@ -15,11 +15,11 @@ import com.google.gson.Gson;
 
 public class H2oMojoScorerLocal implements TrifactaUDF<String> {
 
-    private MojoPipeline _MOJO;
-    private MojoFrameMeta _MOJOFRAMEMETA;
-    private String _DELIMITER;
-    private String _OUTPUT;
-    private boolean _error;
+    private MojoPipeline MOJO;
+    private MojoFrameMeta MOJO_FRAME_META;
+    private String DELIMITER;
+    private String OUTPUT;
+    private boolean error;
 
     @Override
     public String exec(List<Object> inputs) throws IOException {
@@ -28,8 +28,8 @@ public class H2oMojoScorerLocal implements TrifactaUDF<String> {
         }
         String inputRow = inputs.get(0).toString();
         MojoScoringInterface mojoInterface = new MojoScoringInterface();
-        if(!_error) _OUTPUT = mojoInterface.transformLocal(_MOJO, _MOJOFRAMEMETA, inputRow, _DELIMITER);
-        return _OUTPUT;
+        if(!error) OUTPUT = mojoInterface.transformLocal(MOJO, MOJO_FRAME_META, inputRow, DELIMITER);
+        return OUTPUT;
     }
 
     @SuppressWarnings("rawtypes")
@@ -43,17 +43,17 @@ public class H2oMojoScorerLocal implements TrifactaUDF<String> {
     public void init(List<Object> initArgs) {
         try {
             if (initArgs.size() != 1) {
-                _OUTPUT = "Needs 1 Arguments: Json String with keys mojo_name and delimiter";
-                _error = true;
+                OUTPUT = "Needs 1 Arguments: Json String with keys mojo_name and delimiter";
+                error = true;
             }
             String workingDir = System.getProperty("user.dir");
             System.setProperty("ai.h2o.mojos.runtime.license.file", workingDir + "/dai/license.sig");
             String argsJson = initArgs.get(0).toString();
             HashMap<String, String> params = new Gson().fromJson(argsJson, new TypeToken<HashMap<String, Object>>() {}.getType());
-            _MOJO = MojoPipeline.loadFrom(workingDir + "/" + params.get("mojo_name"));
-            _MOJOFRAMEMETA = _MOJO.getInputMeta();
-            _DELIMITER = params.get("delimiter");
-            if (_MOJO == null || _MOJOFRAMEMETA == null || _DELIMITER == null ) {
+            MOJO = MojoPipeline.loadFrom(workingDir + "/" + params.get("mojo_name"));
+            MOJO_FRAME_META = MOJO.getInputMeta();
+            DELIMITER = params.get("delimiter");
+            if (MOJO == null || MOJO_FRAME_META == null || DELIMITER == null ) {
                 throw new Exception("Did Not Initialize Variables");
             }
         } catch (LicenseException e) {
@@ -63,7 +63,7 @@ public class H2oMojoScorerLocal implements TrifactaUDF<String> {
             System.out.format("Unexpected IOException: \n%s", e.toString());
             System.out.println(e.getMessage());
         } catch (Exception e) {
-            System.out.println("Random error which I don't care about");
+            System.out.format("Error: \n%s", e.toString());
             System.out.println(e.getMessage());
         }
     }

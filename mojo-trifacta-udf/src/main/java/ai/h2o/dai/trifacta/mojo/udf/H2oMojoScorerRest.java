@@ -12,11 +12,11 @@ import com.trifacta.trifactaudfs.TrifactaUDF;
 
 public class H2oMojoScorerRest implements TrifactaUDF<String> {
 
-    private String _SERVERIP;
-    private String _SERVERPORT;
-    private String _MOJONAME;
-    private String _OUTPUT;
-    private boolean _error;
+    private String SERVER_IP;
+    private String SERVER_PORT;
+    private String MOJO_NAME;
+    private String OUTPUT;
+    private boolean error;
 
     @Override
     public String exec(List<Object> inputs) throws IOException {
@@ -24,19 +24,16 @@ public class H2oMojoScorerRest implements TrifactaUDF<String> {
         if (inputs == null) {
             return null;
         }
-        StringBuffer sb = new StringBuffer();
         String inputRow = inputs.get(0).toString();
         MojoScoringInterface mojoInterface = new MojoScoringInterface();
         try {
-            if (!_error) _OUTPUT = mojoInterface.transformRest(inputRow, _MOJONAME, _SERVERIP, _SERVERPORT);
+            if (!error) OUTPUT = mojoInterface.transformRest(inputRow, MOJO_NAME, SERVER_IP, SERVER_PORT);
         } catch (Exception e) {
-            System.out.println("THERE WAS AN EXCEPTION THAT GOT THROWN");
-            System.out.println("PRINT OUTPUT ERROR FOR DEBUG");
-            System.out.println(_OUTPUT);
+            System.out.format("Error during execution: \n%s", OUTPUT);
         }
         System.out.println("FINAL OUTPUT BEING RETURNED TO THE UDF");
-        System.out.println(_OUTPUT);
-        return _OUTPUT;
+        System.out.println(OUTPUT);
+        return OUTPUT;
     }
 
     @SuppressWarnings("rawtypes")
@@ -52,15 +49,15 @@ public class H2oMojoScorerRest implements TrifactaUDF<String> {
     public void init(List<Object> initArgs) {
         int numArgs = initArgs.size();
         if (numArgs != 1) {
-            _OUTPUT = "Missing Rest Server parameters: mojoName, serverIP, serverPort";
-            _error = true;
+            OUTPUT = "Missing Rest Server parameters: mojoName, serverIP, serverPort";
+            error = true;
         }
         else {
             String argsJson = initArgs.get(0).toString();
             HashMap<String, String> params = new Gson().fromJson(argsJson, new TypeToken<HashMap<String, Object>>() {}.getType());
-            _SERVERIP = params.get("serverIP");
-            _SERVERPORT = params.get("serverPort");
-            _MOJONAME = params.get("mojoName");
+            SERVER_IP = params.get("serverIP");
+            SERVER_PORT = params.get("serverPort");
+            MOJO_NAME = params.get("mojoName");
         }
     }
 }
