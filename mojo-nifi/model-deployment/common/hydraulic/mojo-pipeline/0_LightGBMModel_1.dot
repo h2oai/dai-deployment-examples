@@ -1,0 +1,48 @@
+digraph {
+  graph[ranksep="2"]
+  rankdir="LR";
+  labelloc="t";
+  label="0_LightGBMModel_1";
+    subgraph cluster_feature {
+        label="Features";
+        node_0 [shape=box, label="cool_pwr_pct"];
+        node_1 [shape=box, label="eff_fact_pct"];
+        node_2 [shape=box, label="fsa_vol_flow"];
+        node_3 [shape=box, label="fsb_vol_flow"];
+        node_4 [shape=box, label="psa_bar"];
+        node_5 [shape=box, label="psb_bar"];
+        node_6 [shape=box, label="psc_bar"];
+        node_7 [shape=box, label="psd_bar"];
+        node_8 [shape=box, label="pse_bar"];
+        node_9 [shape=box, label="psf_bar"];
+        node_10 [shape=box, label="pump_eff"];
+        node_11 [shape=box, label="tsa_temp"];
+        node_12 [shape=box, label="tsb_temp"];
+        node_13 [shape=box, label="tsc_temp"];
+        node_14 [shape=box, label="tsd_temp"];
+        node_15 [shape=box, label="vs_vib"];
+    }
+    node_19 [shape=box, label="InteractionsTransformer"];
+    node_20 [shape=box, label="LightGBMModel"];
+    node_2 -> node_19;
+    node_12 -> node_19;
+    node_11 -> node_19;
+    node_3 -> node_19;
+    node_1 -> node_19;
+    node_13 -> node_19;
+    node_14 -> node_19;
+    node_4 -> node_20;
+    node_5 -> node_20;
+    node_19 -> node_20;
+    node_0 -> node_20;
+    node_14 -> node_20;
+    node_20 -> node_16;
+    node_20 -> node_17;
+    node_20 -> node_18;
+    subgraph cluster_output {
+        label="Outputs";
+        node_16 [shape=box, label="cool_cond_y.3"];
+        node_17 [shape=box, label="cool_cond_y.20"];
+        node_18 [shape=box, label="cool_cond_y.100"];
+    }
+}
