@@ -31,4 +31,4 @@ deployment templates.
    - Available Examples:
       - [EC2 Ubuntu HTTP Server](./python-scoring-pipeline/http_ec2_ubuntu.md)
 - [NiFi Custom Processor for Running the MOJO in NiFi Data Flow](./mojo-nifi)
-   - This example will walk through how to use the MOJO as a processor within a NiFi Data Flow to do batch scoring and real-time scoring.
+   - This example will walk through how to use the NiFi custom processor to execute the MOJO Scoring Pipeline within a NiFi Data Flow to do batch scoring and real-time scoring.
