@@ -30,3 +30,5 @@ deployment templates.
    - These examples are based off of the README.txt that comes with the Python Scoring Pipeline and details the many ways it could be used. Here, each example is standalone and has step-by-step instructions for preparing your environment and testing that the setup with successful.
    - Available Examples:
       - [EC2 Ubuntu HTTP Server](./python-scoring-pipeline/http_ec2_ubuntu.md)
+- [NiFi Custom Processor for Running the MOJO in NiFi Data Flow](./mojo-nifi)
+   - This example will walk through how to use the MOJO as a processor within a NiFi Data Flow to do batch scoring and real-time scoring.
