@@ -1,6 +1,5 @@
 package org.apache.nifi.processors.h2o.record;
 
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -23,6 +22,7 @@ import org.apache.nifi.annotation.behavior.WritesAttribute;
 import org.apache.nifi.annotation.behavior.WritesAttributes;
 import org.apache.nifi.annotation.documentation.CapabilityDescription;
 import org.apache.nifi.annotation.documentation.Tags;
+import org.apache.nifi.annotation.lifecycle.OnScheduled;
 import org.apache.nifi.components.PropertyDescriptor;
 import org.apache.nifi.components.ValidationContext;
 import org.apache.nifi.components.ValidationResult;
@@ -126,6 +126,9 @@ public class ExecuteDaiMojoScoringPipeline extends AbstractProcessor {
 	private final static List<PropertyDescriptor> properties;
 	private final static Set<Relationship> relationships;
 			
+	// Declare Mojo Pipeline model instance
+	private MojoPipeline model;
+	
 	static {
 		ArrayList<PropertyDescriptor> _properties = new ArrayList<>();
 		_properties.add(RECORD_READER);
@@ -149,6 +152,21 @@ public class ExecuteDaiMojoScoringPipeline extends AbstractProcessor {
 	@Override
 	protected List<PropertyDescriptor> getSupportedPropertyDescriptors() {
 		return properties;
+	}
+	
+	@OnScheduled
+	public void onScheduled(final ProcessContext context) {
+		// gets called once when the processor is scheduled to run
+		
+		final String pipelineMojoPath = context.getProperty(PIPELINE_MOJO_FILEPATH).getValue();
+		
+		// Load Mojo Pipeline model (includes feature engineering + ML model)
+		try {
+			model = MojoPipeline.loadFrom(pipelineMojoPath);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
 	}
 	
 	@Override
@@ -216,13 +234,6 @@ public class ExecuteDaiMojoScoringPipeline extends AbstractProcessor {
 				logger.info("{} had no Records to score", new Object[]{original});
 			}
 			else {
-				
-				final String pipelineMojoPath = context.getProperty(PIPELINE_MOJO_FILEPATH).getValue();
-				
-				// Load Mojo Pipeline (includes feature engineering + ML model)
-				MojoPipeline model = MojoPipeline.loadFrom(pipelineMojoPath);
-				final String mojoPipelineUUID = "pipeline.mojo uuid " + model.getUuid();
-				
 				final Record scoredFirstRecord = predict(firstRecord, model, getLogger());
 				
 				if(scoredFirstRecord == null) {
@@ -260,6 +271,7 @@ public class ExecuteDaiMojoScoringPipeline extends AbstractProcessor {
 					attributes.putAll(writeResult.getAttributes());
 				}
 				
+				final String mojoPipelineUUID = "pipeline.mojo uuid " + model.getUuid();
 				
 				scored = session.putAllAttributes(scored, attributes);
 				session.getProvenanceReporter().modifyContent(scored, "Modified With " + mojoPipelineUUID, stopWatch.getElapsed(TimeUnit.MILLISECONDS));
