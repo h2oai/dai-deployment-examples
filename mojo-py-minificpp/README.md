@@ -8,6 +8,8 @@ Integrate the Driverless AI MOJO Scoring Pipeline in C++ Runtime with Python Wra
 
 ## Prerequisites
 
+- Recommended: Launch Ubuntu 18.04 Linux EC2 instance
+
 - Recommended: Create Anaconda or Miniconda Environment
 
 ~~~
@@ -45,13 +47,21 @@ echo "export MINIFI_HOME=/path/to/nifi-minifi-cpp-0.7.0/" | tee -a ~/.bash_profi
 
 ### Driverless AI MOJO
 
+If you have not downloaded the dai-deployment-examples repository, you can do so with the following command:
+
+~~~bash
+git clone https://github.com/h2oai/dai-deployment-examples
+~~~
+
 - Hydraulic Sensor Test Data Set
     - comes with this repo under `model-deployment/common/hydraulic/testData/`
 
-- Python Datatable
+- Python Datatable, Pandas, Scipy
 
 ~~~bash
 pip install datatable
+pip install pandas
+pip install scipy
 ~~~
 
 - MOJO2 Py Runtime
@@ -84,13 +94,9 @@ echo "export DRIVERLESS_AI_LICENSE_KEY={license_key}" | tee -a ~/.profile
 echo "export DRIVERLESS_AI_LICENSE_KEY={license_key}" | tee -a ~/.bash_profile
 ~~~
 
-If you have not downloaded the dai-deployment-examples repository, you can do so with the following command:
-
-~~~bash
-git clone https://github.com/h2oai/dai-deployment-examples
-~~~
-
 ## Process for Developing the MiNiFi C++ Py Processor
+
+Note: This section explains how the processor was built, feel free to go to the next section if you want to run the example.
 
 For developing the MiNiFi C++ Python processor, I used Visual Studio Code. On the nifi-minifi-cpp repo, I read the page called "**Apache NiFi - MiNiFi - Python Processors Readme**", which explains how to write the MiNiFi C++ Python custom processor. I also referenced a few  MiNiFi C++ Python custom processor examples: [ExampleProcessor.py](https://github.com/apache/nifi-minifi-cpp/blob/master/extensions/script/ExampleProcessor.py) and [SentimentAnalysis.py](https://github.com/apache/nifi-minifi-cpp/blob/master/extensions/pythonprocessors/examples/SentimentAnalysis.py). 
 
@@ -113,13 +119,15 @@ code .
 
 Next I needed to write the Python processor and make sure it was added to the MiNiFi product.
 
+Note: the steps moving forward will assume you are running Ubuntu 18.04.
+
 ## Add MiNiFi C++ Py Custom Processor to MiNiFi product
 
 If you have not already downloaded the latest version of MiNiFi C++, then download it. MiNiFi C++ is configured by default to read `minifi-python` directory for any python processors. First we will create an `h2o/dai/msp` folder path in `minifi-python` directory:
 
 ~~~bash
 # go into nifi-minifi-cpp minifi-python/ folder
-cd your/path/to/nifi-minifi-cpp-0.7.0/minifi-python/
+cd /home/ubuntu/nifi-minifi-cpp-0.7.0/minifi-python/
 
 # create h2o/dai/msp folder path
 mkdir -p h2o/dai/msp/
@@ -132,7 +140,7 @@ First we need to copy over **ConvertDsToCsv.py** to `h2o/` folder.
 cd h2o
 
 # copy ConvertDsToCsv.py to current folder
-cp your/path/to/dai-deployment-examples/mojo-py-minificpp/model-deployment/apps/nifi-minifi-cpp/minifi-python/h2o/ConvertDsToCsv.py .
+cp /home/ubuntu/dai-deployment-examples/mojo-py-minificpp/model-deployment/apps/nifi-minifi-cpp/minifi-python/h2o/ConvertDsToCsv.py .
 ~~~
 
 Then we copy ExecuteDaiMojoScoringPipeline.py to `h2o/dai/msp/` folder.
@@ -142,17 +150,17 @@ Then we copy ExecuteDaiMojoScoringPipeline.py to `h2o/dai/msp/` folder.
 cd dai/msp/
 
 # copy ExecuteDaiMojoScoringPipeline.py to current folder
-cp your/path/to/dai-deployment-examples/mojo-py-minificpp/model-deployment/apps/nifi-minifi-cpp/minifi-python/h2o/dai/msp/ExecuteDaiMojoScoringPipeline.py .
+cp /home/ubuntu/dai-deployment-examples/mojo-py-minificpp/model-deployment/apps/nifi-minifi-cpp/minifi-python/h2o/dai/msp/ExecuteDaiMojoScoringPipeline.py .
 ~~~
 
 Now that both python processors are copied over, we need to tell MiNiFi C++ where to find them. So we will overwrite the current `minifi.properties` file with our version of it.
 
 ~~~bash
 # go into nifi-minifi-cpp conf/ folder
-cd your/path/to/nifi-minifi-cpp-0.7.0/conf/
+cd /home/ubuntu/nifi-minifi-cpp-0.7.0/conf/
 
 # copy our version of minifi.properties over to conf/ to overwrite the current one
-cp your/path/to/dai-deployment-examples/mojo-py-minificpp/model-deployment/apps/nifi-minifi-cpp/conf/minifi.properties .
+cp /home/ubuntu/dai-deployment-examples/mojo-py-minificpp/model-deployment/apps/nifi-minifi-cpp/conf/minifi.properties .
 ~~~
 
 We will start MiNiFi C++ after we create the MiNiFi flow through writing a `config.yml` file.
@@ -174,10 +182,10 @@ In the MiNiFi `conf/`, there is a pre-existing `config.yml`. We can replace it w
 
 ~~~bash
 # go into nifi-minifi-cpp conf/ folder
-cd your/path/to/nifi-minifi-cpp-0.7.0/conf/
+cd /home/ubuntu/nifi-minifi-cpp-0.7.0/conf/
 
 # copy our minifi flow config file for interactive scoring to conf/
-cp your/path/to/dai-deployment-examples/mojo-py-minificpp/model-deployment/apps/nifi-minifi-cpp/conf/config-msp-interactive-scoring.yml .
+cp /home/ubuntu/dai-deployment-examples/mojo-py-minificpp/model-deployment/apps/nifi-minifi-cpp/conf/config-msp-interactive-scoring.yml .
 
 # overwrite the pre-existing config.yml with our config that does interactive scoring
 mv config-msp-interactive-scoring.yml config.yml
@@ -197,10 +205,19 @@ cd ../
 
 ## MiNiFi Run MOJO Real-Time Scores
 
+Here we look at the file that the PutFile processor wrote to the local file system, which contains the real-time score result for when MiNiFi C++ executed the MOJO on some real-time data (one row of data) to do real-time scoring.
 
+![minifi-mojo-real-time-scoring.jpg](images/minifi-mojo-real-time-scoring.jpg)
+
+Note: PutFile stores the files with real-time predictions in the following folder path and creates the path if it doesn't exist: `home/ubuntu/dai-deployment-examples/mojo-py-minificpp/model-deployment/common/hydraulic/predData/pred-real-time-data`
 
 ## MiNiFi Run MOJO Batch Scores
 
+Here we look at the file that the PutFile processor wrote to the local file system, which contains the batch score result for when MiNiFi C++ executed the MOJO on some batch data (multiple rows of data) to do batch scoring.
+
+![minifi-mojo-batch-scoring.jpg](images/minifi-mojo-batch-scoring.jpg)
+
+Note: PutFile stores the files with batch predictions in the following folder path and creates the path if it doesn't exist: `home/ubuntu/dai-deployment-examples/mojo-py-minificpp/model-deployment/common/hydraulic/predData/pred-batch-data`
 
 ## Further Reading
 
