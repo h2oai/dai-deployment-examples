@@ -40,6 +40,8 @@ from collections import Counter
 from scipy.special._ufuncs import expit
 import daimojo.model
 
+m_scorer = None
+
 def describe(processor):
     """ describe what this processor does
     """
@@ -59,8 +61,9 @@ def onSchedule(context):
         this function is called when the processor is scheduled to run
     """
     # instantiate H2O's MOJO Scoring Pipeline Scorer
+    global m_scorer
     mojo_pipeline_filepath = context.getProperty("MOJO Pipeline Filepath")
-    self.m_scorer = daimojo.model(mojo_pipeline_filepath)
+    m_scorer = daimojo.model(mojo_pipeline_filepath)
 
 class ContentExtract(object):
     """ ContentExtract callback class is defined for reading streams of data through the session
@@ -90,6 +93,7 @@ class ContentWrite(object):
 def onTrigger(context, session):
     """ onTrigger is executed and passed processor context and session
     """
+    global m_scorer
     flow_file = session.get()
     # lambda compares two lists: does header equal expected header
     compare = lambda header, exp_header: Counter(header) == Counter(exp_header)
@@ -98,18 +102,18 @@ def onTrigger(context, session):
         read_cb = ContentExtract()
         session.read(flow_file, read_cb)
         # add flow file attribute for creation time of mojo
-        flow_file.addAttribute("mojo_creation_time", self.m_scorer.created_time)
+        flow_file.addAttribute("mojo_creation_time", m_scorer.created_time)
         # add flow file attribute for uuid of mojo
-        flow_file.addAttribute("mojo_uuid", self.m_scorer.uuid)
+        flow_file.addAttribute("mojo_uuid", m_scorer.uuid)
         # get list of predicted label(s) for prediction header
-        pred_header = self.m_scorer.output_names
+        pred_header = m_scorer.output_names
         # load tabular data str of 1 or more rows into datatable frame
         test_dt_frame = dt.Frame(read_cb.content)
         # does test dt frame column names (header) equal m_scorer feature_names (exp_header)
-        if compare(test_dt_frame.names, self.m_scorer.feature_names) == False:
-            test_dt_frame.names = tuple(self.m_scorer.feature_names)
+        if compare(test_dt_frame.names, m_scorer.feature_names) == False:
+            test_dt_frame.names = tuple(m_scorer.feature_names)
         # do scoring on test data in the test_dt_frame, return dt frame with predicted label(s)
-        preds_dt_frame = self.m_scorer.predict(test_dt_frame)
+        preds_dt_frame = m_scorer.predict(test_dt_frame)
         # convert preds_dt_frame to pandas dataframe
         preds_df = preds_dt_frame.to_pandas()
         # convert pandas df to str without df index, then write to flow file
