@@ -26,11 +26,16 @@
     h2oaicore-1.8.4.1-cp36-cp36m-linux_x86_64.whl
     scoring_h2oai_experiment_6a77d0a4_6a25_11ea_becf_0242ac110002-1.0.0-py3-none-any.whl
 """
+import os
+import sys
 import codecs
 import pandas as pd
 import datatable as dt
 from scipy.special._ufuncs import expit
-from scoring_h2oai_experiment_6a77d0a4_6a25_11ea_becf_0242ac110002 import Scorer
+sys.path.append(os.environ['HOME'] + "/nifi-minifi-cpp-0.7.0/modules/")
+from DaiPythonScorer import *
+
+scorer = None
 
 def describe(processor):
     """ describe what this processor does
@@ -50,7 +55,8 @@ def onSchedule(context):
         this function is called when the processor is scheduled to run
     """
     # instantiate H2O's python scoring pipeline scorer
-    self.scorer = Scorer()
+    global scorer
+    scorer = Scorer()
 
 class ContentExtract(object):
     """ ContentExtract callback class is defined for reading streams of data through the session
@@ -80,6 +86,7 @@ class ContentWrite(object):
 def onTrigger(context, session):
     """ onTrigger is executed and passed processor context and session
     """
+    global scorer
     flow_file = session.get()
     if flow_file is not None:
         # read test data of flow file content into read_cb.content
@@ -96,7 +103,7 @@ def onTrigger(context, session):
         log.info("test_list = {}".format(test_list))
         log.info("len(test_list) = {}".format(len(test_list)))
         # do real time scoring on test data in the list, return list with predicted label(s)
-        preds_list = self.scorer.score(test_list)
+        preds_list = scorer.score(test_list)
         # convert pred list to a comma-separated string followed by \n for line end
         preds_list_str = ','.join(map(str, preds_list)) + '\n'
         # concatenate prediction header and list string to pred table string

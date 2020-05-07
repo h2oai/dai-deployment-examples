@@ -26,11 +26,16 @@
     h2oaicore-1.8.4.1-cp36-cp36m-linux_x86_64.whl
     scoring_h2oai_experiment_6a77d0a4_6a25_11ea_becf_0242ac110002-1.0.0-py3-none-any.whl
 """
+import os
+import sys
 import codecs
 import pandas as pd
 import datatable as dt
 from scipy.special._ufuncs import expit
-from scoring_h2oai_experiment_6a77d0a4_6a25_11ea_becf_0242ac110002 import Scorer
+sys.path.append(os.environ['HOME'] + "/nifi-minifi-cpp-0.7.0/modules/")
+from DaiPythonScorer import *
+
+scorer = None
 
 def describe(processor):
     """ describe what this processor does
@@ -49,7 +54,8 @@ def onSchedule(context):
         this function is called when the processor is scheduled to run
     """
     # instantiate H2O's python scoring pipeline scorer
-    self.scorer = Scorer()
+    global scorer
+    scorer = Scorer()
 
 class ContentExtract(object):
     """ ContentExtract callback class is defined for reading streams of data through the session
@@ -79,6 +85,7 @@ class ContentWrite(object):
 def onTrigger(context, session):
     """ onTrigger is executed and passed processor context and session
     """
+    global scorer
     flow_file = session.get()
     if flow_file is not None:
         read_cb = ContentExtract()
@@ -87,7 +94,7 @@ def onTrigger(context, session):
         # load tabular data str into datatable
         test_dt_frame = dt.Frame(read_cb.content)
         # do batch scoring on test data in datatable frame, return pandas df with predicted labels
-        batch_scores_df = self.scorer.score_batch(test_dt_frame)
+        batch_scores_df = scorer.score_batch(test_dt_frame)
         # convert df to str without df index, then write to flow file
         batch_scores_df_str = batch_scores_df.to_string(index=False)
         write_cb = ContentWrite(batch_scores_df_str)
