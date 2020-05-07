@@ -4,7 +4,11 @@
 
 Integrate the Driverless AI MOJO Scoring Pipeline in C++ Runtime with Python Wrapper into Apache MiNiFi C++ through a Python custom processor. This will be a Cloudera integration point for Cloudera Data Flow (CDF), particularly Cloudera Edge Management (CEM). CEM is powered by one or more Apache MiNiFi C++ agents.
 
+If you are using Driverless AI Python Scoring Pipeline, then read the following document: [Execute the Driverless AI Python Scoring Pipeline with MiNiFi Data Flow](minifi-python-scoring-pipeline.md)
+
 ## Video Walkthrough
+
+Here is a link to a YouTube video in case you want to see a video walkthrough of running this deployment example: [MiNiFi Custom Processor for Running the MOJO in MiNiFi Data Flow](https://youtu.be/jQYbZ3TrncM)
 
 ## Prerequisites
 
@@ -53,9 +57,6 @@ If you have not downloaded the dai-deployment-examples repository, you can do so
 git clone https://github.com/h2oai/dai-deployment-examples
 ~~~
 
-- Hydraulic Sensor Test Data Set
-    - comes with this repo under `model-deployment/common/hydraulic/testData/`
-
 - Python Datatable, Pandas, Scipy
 
 ~~~bash
@@ -80,9 +81,6 @@ pip install daimojo-2.2.0-cp36-cp36m-linux_x86_64.whl
 pip install daimojo-2.2.0-cp36-cp36m-linux_ppc64le.whl
 ~~~
 
-- Pipeline MOJO File
-    comes with this repo under `model-deployment/common/hydraulic/mojo-pipeline/pipeline.mojo`
-
 - Recommend Set **DRIVERLESS_AI_LICENSE_KEY** as an environment variable for OS that MiNiFi C++ runs on
     - you will need to get Driverless AI product to get the License Key
 
@@ -93,6 +91,12 @@ echo "export DRIVERLESS_AI_LICENSE_KEY={license_key}" | tee -a ~/.profile
 # Mac user
 echo "export DRIVERLESS_AI_LICENSE_KEY={license_key}" | tee -a ~/.bash_profile
 ~~~
+
+- Pipeline MOJO File
+    comes with this repo under `model-deployment/common/hydraulic/mojo-pipeline/pipeline.mojo`
+
+- Hydraulic Sensor Test Data Set
+    - comes with this repo under `model-deployment/common/hydraulic/testData/`
 
 ## Process for Developing the MiNiFi C++ Py Processor
 
@@ -207,7 +211,7 @@ cd ../
 
 Here we look at the file that the PutFile processor wrote to the local file system, which contains the real-time score result for when MiNiFi C++ executed the MOJO on some real-time data (one row of data) to do real-time scoring.
 
-![minifi-mojo-real-time-scoring.jpg](images/minifi-mojo-real-time-scoring.jpg)
+![minifi-real-time-scoring.jpg](images/minifi-real-time-scoring.jpg)
 
 Note: PutFile stores the files with real-time predictions in the following folder path and creates the path if it doesn't exist: `home/ubuntu/dai-deployment-examples/mojo-py-minificpp/model-deployment/common/hydraulic/predData/pred-real-time-data`
 
@@ -215,10 +219,6 @@ Note: PutFile stores the files with real-time predictions in the following folde
 
 Here we look at the file that the PutFile processor wrote to the local file system, which contains the batch score result for when MiNiFi C++ executed the MOJO on some batch data (multiple rows of data) to do batch scoring.
 
-![minifi-mojo-batch-scoring.jpg](images/minifi-mojo-batch-scoring.jpg)
+![minifi-batch-scoring.jpg](images/minifi-batch-scoring.jpg)
 
 Note: PutFile stores the files with batch predictions in the following folder path and creates the path if it doesn't exist: `home/ubuntu/dai-deployment-examples/mojo-py-minificpp/model-deployment/common/hydraulic/predData/pred-batch-data`
-
-## Further Reading
-
-- [Execute the Driverless AI Python Scoring Pipeline with MiNiFi Data Flow](minifi-python-scoring-pipeline.md)
