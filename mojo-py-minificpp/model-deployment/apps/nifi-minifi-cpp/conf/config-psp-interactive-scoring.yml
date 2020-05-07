@@ -29,7 +29,7 @@ Processors:
       Properties:
         Script File: /home/ubuntu/nifi-minifi-cpp-0.7.0/minifi-python/h2o/dai/psp/ExecuteDaiPspRealTimeScoring.py
         Predicted Label(s): cool_cond_y.3,cool_cond_y.100,cool_cond_y.20
-        Module Directory: /home/ubuntu/dai-deployment-examples/mojo-py-minificpp/model-deployment/common/hydraulic/python-scoring-pipeline/psp-module.py
+        Module Directory: /home/ubuntu/nifi-minifi-cpp-0.7.0/modules/DaiPythonScorer.py
 
     - name: ConvertDsToCsv
       class: ConvertDsToCsv
