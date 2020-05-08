@@ -26,9 +26,12 @@
     h2oaicore-1.8.4.1-cp36-cp36m-linux_x86_64.whl
     scoring_h2oai_experiment_6a77d0a4_6a25_11ea_becf_0242ac110002-1.0.0-py3-none-any.whl
 """
+import os
+import sys
 import codecs
 import pandas as pd
 import datatable as dt
+sys.path.append(os.environ['HOME'] + "/nifi-minifi-cpp-0.7.0/modules/")
 from DaiPythonScorer import *
 
 scorer = None
