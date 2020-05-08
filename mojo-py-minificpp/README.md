@@ -4,7 +4,7 @@
 
 Integrate the Driverless AI MOJO Scoring Pipeline in C++ Runtime with Python Wrapper into Apache MiNiFi C++ through a Python custom processor. This will be a Cloudera integration point for Cloudera Data Flow (CDF), particularly Cloudera Edge Management (CEM). CEM is powered by one or more Apache MiNiFi C++ agents.
 
-If you are using Driverless AI Python Scoring Pipeline, then read the following document: [Execute the Driverless AI Python Scoring Pipeline with MiNiFi Data Flow](minifi-python-scoring-pipeline.md)
+If you are using Driverless AI Python Scoring Pipeline, then read the following document: [Execute the Driverless AI Python Scoring Pipeline within MiNiFi Data Flow](minifi-python-scoring-pipeline.md)
 
 ## Video Walkthrough
 
