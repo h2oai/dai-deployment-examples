@@ -32,7 +32,6 @@ import codecs
 import pandas as pd
 import datatable as dt
 from scipy.special._ufuncs import expit
-sys.path.append(os.environ['HOME'] + "/nifi-minifi-cpp-0.7.0/modules/")
 from DaiPythonScorer import *
 
 scorer = None
