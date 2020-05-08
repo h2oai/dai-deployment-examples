@@ -28,7 +28,6 @@ Processors:
       class: ExecuteDaiPspBatchScoring
       Properties:
         Script File: /home/ubuntu/nifi-minifi-cpp-0.7.0/minifi-python/h2o/dai/psp/ExecuteDaiPspBatchScoring.py
-        Module Directory: /home/ubuntu/nifi-minifi-cpp-0.7.0/modules/DaiPythonScorer.py
 
     - name: ConvertDsToCsv
       class: ConvertDsToCsv
