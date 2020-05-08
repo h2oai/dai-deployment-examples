@@ -1,4 +1,4 @@
-# Execute the Driverless AI Python Scoring Pipeline with MiNiFi Data Flow
+# Execute the Driverless AI Python Scoring Pipeline within MiNiFi Data Flow
 
 ## Cloudera Integration Point for CDF
 
@@ -53,7 +53,7 @@ If you have not downloaded the dai-deployment-examples repository, you can do so
 git clone https://github.com/h2oai/dai-deployment-examples
 ~~~
 
-You will need to downloaded the Driverless AI Python Scoring Pipeline for this walkthrough. When you have downloaded it, you should have a `scorer.zip` that was saved to your local machine
+You will need to downloaded the Driverless AI Python Scoring Pipeline for this walkthrough. When you have downloaded it, you should have a `scorer.zip` that was saved to your local machine's Download folder.
 
 In your local machine terminal, move the Driverless AI `scorer.zip` file to your EC2 instance
 
