@@ -6,7 +6,7 @@ Integrate the Driverless AI Python Scoring Pipeline in C++ Runtime with Python W
 
 ## Video Walkthrough
 
-Here is a link to a YouTube video in case you want to see a video walkthrough of running this deployment example: 
+Here is a link to a YouTube video in case you want to see a video walkthrough of running this deployment example: [MiNiFi Custom Python Processor for Running DAI Py Scorer in MiNiFi Data Flow](https://youtu.be/bmtS7GInaJA)
 
 ## Prerequisites
 
@@ -31,8 +31,8 @@ yum install -y leveldb
 - For Debian/Ubuntu:
 
 ~~~bash
-apt install -y libleveldb-dev
-apt install -y libxml2
+sudo apt install -y libleveldb-dev
+sudo apt install -y libxml2
 ~~~
 
 - Download the latest version of MiNiFi C++: https://nifi.apache.org/minifi/download.html
@@ -53,25 +53,52 @@ If you have not downloaded the dai-deployment-examples repository, you can do so
 git clone https://github.com/h2oai/dai-deployment-examples
 ~~~
 
-- Python Datatable, Pandas, Scipy
+You will need to downloaded the Driverless AI Python Scoring Pipeline for this walkthrough. When you have downloaded it, you should have a `scorer.zip` that was saved to your local machine
+
+In your local machine terminal, move the Driverless AI `scorer.zip` file to your EC2 instance
 
 ~~~bash
-pip install datatable
-pip install pandas
-pip install scipy
+# Move local Python Scoring Pipeline to EC2 instance
+scp -i $DAI_SCORING_PEM $HOME/Downloads/scorer.zip ubuntu@$DAI_SCORING_INSTANCE:/home/ubuntu
 ~~~
 
-- Driverless AI Python Scoring Pipeline
-    - For Linux `model-deployment/common/hydraulic/python-scoring-pipeline/scoring-pipeline/scoring_h2oai_experiment_0abac7c4_8993_11ea_ae54_0242ac110002-1.0.0-py3-none-any.whl`
+In your EC2 instance terminal, install the following packages:
 
 ~~~bash
+# Make all packages available on EC2 instance
+sudo apt-get -y update
+
+# Install OpenBLAS for linear algebra calculations
+sudo apt-get -y install libopenblas-dev
+# Install Unzip for access to individual files in scoring pipeline folder
+sudo apt-get -y install unzip
+# Install Java to include open source H2O-3 algorithms
+sudo apt-get -y install openjdk-8-jdk
+
 sudo apt -y install gcc
 sudo apt -y install g++
 ~~~
 
+In your EC2 instance terminal, move `scorer.zip` to following directory and unzip it:
+
 ~~~bash
-# For Linux
-pip install scoring_h2oai_experiment_0abac7c4_8993_11ea_ae54_0242ac110002-1.0.0-py3-none-any.whl
+cd $HOME/dai-deployment-examples/mojo-py-minificpp/model-deployment/common/hydraulic/
+
+mv $HOME/scorer.zip .
+unzip scorer.zip
+~~~
+
+Install Driverless AI Python Scoring Pipeline pip packages from `requirements.txt`:
+
+~~~bash
+# Change to scoring-pipeline folder
+cd scoring-pipeline
+
+# Install gitdb2 and gitdb into env
+pip install --upgrade gitdb2==2.0.6 gitdb==0.6.4
+
+# Install scoring pipeline remaining dependencies
+pip install -r requirements.txt
 ~~~
 
 - Recommend Set **DRIVERLESS_AI_LICENSE_KEY** as an environment variable for OS that MiNiFi C++ runs on
@@ -232,7 +259,7 @@ Here we look at the file that the PutFile processor wrote to the local file syst
 
 ![minifi-real-time-scoring.jpg](images/minifi-real-time-scoring.jpg)
 
-Note: PutFile stores the files with real-time predictions in the following folder path and creates the path if it doesn't exist: `home/ubuntu/dai-deployment-examples/mojo-py-minificpp/model-deployment/common/hydraulic/predData/pred-real-time-data`
+Note: PutFile stores the files with real-time predictions in the following folder path and creates the path if it doesn't exist: `/home/ubuntu/dai-deployment-examples/mojo-py-minificpp/model-deployment/common/hydraulic/predData/pred-real-time-data`
 
 ## MiNiFi Run Driverless AI Python Scorer to do Batch Scoring
 
@@ -240,4 +267,4 @@ Here we look at the file that the PutFile processor wrote to the local file syst
 
 ![minifi-batch-scoring.jpg](images/minifi-batch-scoring.jpg)
 
-Note: PutFile stores the files with batch predictions in the following folder path and creates the path if it doesn't exist: `home/ubuntu/dai-deployment-examples/mojo-py-minificpp/model-deployment/common/hydraulic/predData/pred-batch-data`
+Note: PutFile stores the files with batch predictions in the following folder path and creates the path if it doesn't exist: `/home/ubuntu/dai-deployment-examples/mojo-py-minificpp/model-deployment/common/hydraulic/predData/pred-batch-data`
