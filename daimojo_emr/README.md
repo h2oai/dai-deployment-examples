@@ -6,7 +6,7 @@
 
 ## EMR Create Cluster - Advanced Options
 
-- Use EMR release `emr-5.29.0`
+- Use EMR release `emr-5.29.0` (required as it's the last release that uses Python 3.6)
 
 	- Select Hadoop and Spark
 
