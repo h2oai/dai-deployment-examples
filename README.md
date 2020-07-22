@@ -30,3 +30,5 @@ deployment templates.
    - These examples are based off of the README.txt that comes with the Python Scoring Pipeline and details the many ways it could be used. Here, each example is standalone and has step-by-step instructions for preparing your environment and testing that the setup with successful.
    - Available Examples:
       - [EC2 Ubuntu HTTP Server](./python-scoring-pipeline/http_ec2_ubuntu.md)
+- [Deploy Driverless AI MOJO to MiNiFi C++](./mojo-py-minificpp/README.md)
+   - This example will walk through how to use the custom MiNiFi Python processor to execute the Driverless AI MOJO Scoring Pipeline within a MiNiFi Data Flow to do batch scoring or real-time scoring.
