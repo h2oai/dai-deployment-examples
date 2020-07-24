@@ -650,11 +650,11 @@
                     </entry>
                     <entry>
                         <key>h2o-record-custom-modules</key>
-                        <value>/Users/jmedel/Development/James/Hydraulic-System-Predictive-Maintenance/model-deployment/common/hydraulic/mojo-scoring-pipeline/java-runtime/java/mojo2-java-runtime/mojo2-runtime.jar</value>
+                        <value>/home/ubuntu/dai-mojo-nifi/mojo-pipeline/mojo2-runtime.jar</value>
                     </entry>
                     <entry>
                         <key>h2o-record-pipeline-mojo-filepath</key>
-                        <value>/Users/jmedel/Development/James/Hydraulic-System-Predictive-Maintenance/model-deployment/common/hydraulic/mojo-scoring-pipeline/mp-hydr-cool-cond-y/pipeline.mojo</value>
+                        <value>/home/ubuntu/dai-mojo-nifi/mojo-pipeline/pipeline.mojo</value>
                     </entry>
                 </properties>
                 <runDurationMillis>0</runDurationMillis>
@@ -752,7 +752,7 @@
                 <properties>
                     <entry>
                         <key>Directory</key>
-                        <value>/Users/jmedel/Development/James/Hydraulic-System-Predictive-Maintenance/model-deployment/common/hydraulic/predData/pred-real-time-data</value>
+                        <value>/home/ubuntu/dai-mojo-nifi/predData/pred-real-time-data</value>
                     </entry>
                     <entry>
                         <key>Conflict Resolution Strategy</key>
@@ -1065,7 +1065,7 @@
                 <properties>
                     <entry>
                         <key>Input Directory</key>
-                        <value>/Users/jmedel/Development/James/Hydraulic-System-Predictive-Maintenance/model-deployment/common/hydraulic/testData/test-real-time-data</value>
+                        <value>/home/ubuntu/dai-mojo-nifi/testData/test-real-time-data</value>
                     </entry>
                     <entry>
                         <key>File Filter</key>

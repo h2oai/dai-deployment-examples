@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.nifi.annotation.behavior.EventDriven;
 import org.apache.nifi.annotation.behavior.InputRequirement;
 import org.apache.nifi.annotation.behavior.RequiresInstanceClassLoading;
@@ -164,7 +165,7 @@ public class ExecuteDaiMojoScoringPipeline extends AbstractProcessor {
 		try {
 			model = MojoPipeline.loadFrom(pipelineMojoPath);
 		} catch (Exception e) {
-			e.printStackTrace();
+			getLogger().error("Unable to load MOJO from pipelineMojoPath due to " + e.toString());
 		}
 		
 	}
@@ -180,7 +181,6 @@ public class ExecuteDaiMojoScoringPipeline extends AbstractProcessor {
 				   .explanation(message)
 				   .build());
 		}
-		
 		return results;
 	}
 	
@@ -224,59 +224,62 @@ public class ExecuteDaiMojoScoringPipeline extends AbstractProcessor {
 					) {
 					writer.beginRecordSet();
 					writeResult = writer.finishRecordSet();
-					
+						
 					attributes.put("record.count", String.valueOf(writeResult.getRecordCount()));
 					attributes.put(CoreAttributes.MIME_TYPE.key(), writer.getMimeType());
 					attributes.putAll(writeResult.getAttributes());
 				}
-				
 				scored = session.putAllAttributes(scored, attributes);
 				logger.info("{} had no Records to score", new Object[]{original});
 			}
 			else {
-				final Record scoredFirstRecord = predict(firstRecord, model, getLogger());
+				final String mojoPipelineUUID = "pipeline.mojo uuid " + model.getUuid();
+				
+				// Convert input Record to MojoFrame
+				final MojoFrame firstMojoFrame = convertRecordToMojoFrame(firstRecord);
+				
+				// Execute prediction on first mojo frame using Driverless AI MOJO Scoring Pipeline "model"
+				final MojoFrame scoredFirstMojoFrame = predict(firstMojoFrame, model);
+				
+				// Convert scored MojoFrame to Record
+				final Record scoredFirstRecord = convertMojoFrameToRecord(scoredFirstMojoFrame, logger);
 				
 				if(scoredFirstRecord == null) {
 					throw new ProcessException("Error scoring the first record");
 				}
-				
 				final RecordSchema writeSchema = writerFactory.getSchema(original.getAttributes(), scoredFirstRecord.getSchema());
 				
+				// try-with-resources block opens RecordSetWriter, writes the scoredRecords to the given output stream,
+				// and closes RecordSetWriter automatically once execution leaves try-with-resources block
+				// Multilevel Inheritance: RecordSetWriter <- RecordWriter <- Closeable <- AutoCloseable
 				try (final OutputStream out = session.write(scored);
-					final RecordSetWriter writer = writerFactory.createWriter(getLogger(), writeSchema, out, scored)
+					 final RecordSetWriter writer = writerFactory.createWriter(getLogger(), writeSchema, out, scored)
 				    ) {
 					writer.beginRecordSet();
 					
 					writer.write(scoredFirstRecord);
 					
-					Record record;
-					record = reader.nextRecord();
+					Record record = reader.nextRecord();
 					
 					while(record != null) {
-						final Record scoredRecord = predict(record, model, getLogger());
+						// Convert input Record to MojoFrame
+						MojoFrame mojoFrame = convertRecordToMojoFrame(record);
+						// Execute prediction on first mojo frame using Driverless AI MOJO Scoring Pipeline "model"
+						final MojoFrame scoredMojoFrame = predict(mojoFrame, model);
+						// Convert scored MojoFrame to Record
+						final Record scoredRecord = convertMojoFrameToRecord(scoredMojoFrame, logger);
 						writer.write(scoredRecord);
 						record = reader.nextRecord();
 					}
-					
 					writeResult = writer.finishRecordSet();
-
-					try {
-						writer.close();
-					} catch (final IOException ioe) {
-						getLogger().warn("Failed to close Writer for {}", new Object[]{scored});
-					}
 					
 					attributes.put("record.count", String.valueOf(writeResult.getRecordCount()));
 					attributes.put(CoreAttributes.MIME_TYPE.key(), writer.getMimeType());
 					attributes.putAll(writeResult.getAttributes());
 				}
-				
-				final String mojoPipelineUUID = "pipeline.mojo uuid " + model.getUuid();
-				
 				scored = session.putAllAttributes(scored, attributes);
 				session.getProvenanceReporter().modifyContent(scored, "Modified With " + mojoPipelineUUID, stopWatch.getElapsed(TimeUnit.MILLISECONDS));
 				logger.debug("Scored {}", new Object[] {original});
-				
 			}
 		} catch (final Exception ex) {
 			logger.error("Unable to score {} due to {}", new Object[]{original, ex.toString(), ex});
@@ -292,11 +295,23 @@ public class ExecuteDaiMojoScoringPipeline extends AbstractProcessor {
 		session.transfer(original, REL_ORIGINAL);
 	}
 	
+	private MojoFrame predict(MojoFrame mojoFrame, MojoPipeline model) {
+		// Executes the pipeline of transformers as stated in this model's Mojo file
+		// In other words, use Mojo to predict the labels from iframe real world data
+		MojoFrame oframe = model.transform(mojoFrame);
+		
+		return oframe;
+	}
+	
+	// TODO: Future improvement -
+	// 		 Create a new NiFi Controller Service API called DaiMojoFrameRecordSetWriter that writes out a 
+	//		 Driverless AI Mojo Frame from reading a NiFi Record
 	@SuppressWarnings("unchecked")
-	private Record predict(final Record record, MojoPipeline model, final ComponentLog logger) {
+	private MojoFrame convertRecordToMojoFrame(final Record record) {
+		// Convert record to hash map
 		Map<String, Object> recordMap = (Map<String, Object>) DataTypeUtils.convertRecordFieldtoObject(record, RecordFieldType.RECORD.getRecordDataType(record.getSchema()));
 		
-		// Get an instance of a MojoFrameBuilder that will be used to make an input frame
+		// Get an instance of a MojoFrameBuilder that will be used to make a MojoFrame
 		MojoFrameBuilder frameBuilder = model.getInputFrameBuilder();
 		// Get an instance of a MojoRowBuilder that will be used to construct a row for this builder
 		MojoRowBuilder rowBuilder = frameBuilder.getMojoRowBuilder();
@@ -308,70 +323,66 @@ public class ExecuteDaiMojoScoringPipeline extends AbstractProcessor {
 		// Append a row from the current state of the rowBuilder
 		frameBuilder.addRow(rowBuilder);
 		
-		// Construct a MojoFrame iframe which will be transformed by MOJO pipeline
+		// Construct a MojoFrame
 		MojoFrame iframe = frameBuilder.toMojoFrame();
 		
-		// Executes the pipeline of transformers as stated in this model's Mojo file
-		// In other words, use Mojo to predict the labels from iframe real world data
-		MojoFrame oframe = model.transform(iframe);
+		return iframe;
+	}
+	
+	// TODO: Future improvement -
+	//		 Create a new NiFi Controller Service API called DaiMojoFrameRecordSetReader that reads a
+	//		 Driverless AI Mojo Frame from a NiFi Record
+	private Record convertMojoFrameToRecord(MojoFrame mojoFrame, final ComponentLog logger) {
+		// Create a hash map, then we will store the data from the MojoFrame into it
+		Map<String, Object> recordMap = new HashMap<>();
 		
-		// Create a new map of key value pair(s) based on the predictions from oframe
-		Map<String, Object> predictedRecordMap = new HashMap<>();
+		// There is only one row in the MojoFrame
+		int firstRow = 0;
 		
-		// loop on the number of rows of each column in the MojoFrame
-		for(int row_i = 0; row_i < oframe.getNrows(); row_i++)
-		{
-			// loop on the number of columns in each row in the MojoFrame
-			for(int col_j = 0; col_j < oframe.getNcols(); col_j++)
-			{
-				// Get the name of a column at a particular index getColumnName(int index)
-				String key = oframe.getColumnName(col_j);
-				
-				// Get the data stored in the column at a particular index getColumnData(int index)
-				Object columnData = oframe.getColumnData(col_j);
-				
-				// Check the Data Type in column at certain index using MojoColumn.Type enum
-				// Cast Object to appropriate Data Type, then store in predictedRecordMap
-				if(oframe.getColumnType(col_j) == MojoColumn.Type.Bool) {
-					boolean[] columnDataArray = (boolean[])columnData;
-					predictedRecordMap.put(key, columnDataArray[row_i]);
-				}
-				else if(oframe.getColumnType(col_j) == MojoColumn.Type.Int32) {
-					int[] columnDataArray = (int[])columnData;
-					predictedRecordMap.put(key, columnDataArray[row_i]);
-				}
-				else if(oframe.getColumnType(col_j) == MojoColumn.Type.Int64) {
-					long[] columnDataArray = (long[])columnData;
-					predictedRecordMap.put(key, columnDataArray[row_i]);
-				}
-				else if(oframe.getColumnType(col_j) == MojoColumn.Type.Float32)
-				{
-					float[] columnDataArray = (float[])columnData;
-					predictedRecordMap.put(key, columnDataArray[row_i]);
-				}
-				else if(oframe.getColumnType(col_j) == MojoColumn.Type.Float64)
-				{
-					double[] columnDataArray = (double[])columnData;
-					predictedRecordMap.put(key, columnDataArray[row_i]);
-				}
-				else if(oframe.getColumnType(col_j) == MojoColumn.Type.Str)
-				{
-					String[] columnDataArray = (String[])columnData;
-					predictedRecordMap.put(key, columnDataArray[row_i]);
-				}
-				else if(oframe.getColumnType(col_j) == MojoColumn.Type.Time64)
-				{
-					float[] columnDataArray = (float[])columnData;
-					predictedRecordMap.put(key, columnDataArray[row_i]);
-				}	
-				// TODO: Look into adding support for MojoColumn.Type Time64, MojoDateTime[] object
-				else {
-					logger.error("Mojo Column Type is not supported.");
-				}
+		// Iterate through the MojoFrame and store all the data into a hash map
+		// Loop on the number of columns in the first row of the MojoFrame
+		for (int nCol = 0; nCol < mojoFrame.getNcols(); nCol++) {
+			// Get the name of a column at a particular index getColumnName(int index)
+			String key = mojoFrame.getColumnName(nCol);
+
+			// Get the data stored in the column at a certain index getColumnData(int index)
+			Object mojoFrameColumnData = mojoFrame.getColumnData(nCol);
+			
+			MojoColumn.Type mojoFrameColDataType = mojoFrame.getColumnType(nCol);
+			
+			// Check MojoFrame Column Data Type at a index using MojoColumn.Type enum {Bool, Int32, Int64, Float32, Float64, Str}
+			// Cast Object array to appropriate Data Type
+			switch (mojoFrameColDataType) {
+			case Bool:
+				boolean[] columnBoolArray = (boolean[]) mojoFrameColumnData;
+				recordMap.put(key, columnBoolArray[firstRow]);
+				break;
+			case Int32:
+				int[] columnIntArray = (int[]) mojoFrameColumnData;
+				recordMap.put(key, columnIntArray[firstRow]);
+				break;
+			case Int64:
+				long[] columnLongArray = (long[]) mojoFrameColumnData;
+				recordMap.put(key, columnLongArray[firstRow]);
+				break;
+			case Float32:
+				float[] columnFloatArray = (float[]) mojoFrameColumnData;
+				recordMap.put(key, columnFloatArray[firstRow]);
+				break;
+			case Float64:
+				double[] columnDoubleArray = (double[]) mojoFrameColumnData;
+				recordMap.put(key, columnDoubleArray[firstRow]);
+				break;
+			case Str:
+				String[] columnStringArray = (String[]) mojoFrameColumnData;
+				recordMap.put(key, columnStringArray[firstRow]);
+				break;
+			default:
+				logger.error("Mojo Column Type is not supported.");
+				break;
 			}
 		}
-
-		final Record predictedRecord = DataTypeUtils.toRecord(predictedRecordMap, "r");
+		final Record predictedRecord = DataTypeUtils.toRecord(recordMap, "r");
 		return predictedRecord;
 	}
 }

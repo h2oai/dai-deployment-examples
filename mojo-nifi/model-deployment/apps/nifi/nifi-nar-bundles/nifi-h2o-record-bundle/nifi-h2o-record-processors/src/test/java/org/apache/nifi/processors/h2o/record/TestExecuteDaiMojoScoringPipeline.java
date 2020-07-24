@@ -39,7 +39,7 @@ public class TestExecuteDaiMojoScoringPipeline {
 	
 	// The pretty printed json comparisons don't work on windows
 	@BeforeClass
-	public static void setUpSuit() {
+	public static void setUpSuite() {
 		Assume.assumeTrue("Test only runs on *nix", !SystemUtils.IS_OS_WINDOWS);
 	}
 	
@@ -77,11 +77,11 @@ public class TestExecuteDaiMojoScoringPipeline {
 		// runner.setProperty(writerService, SchemaAccessUtils.SCHEMA_ACCESS_STRATEGY, SchemaAccessUtils.INHERIT_RECORD_SCHEMA);
 		runner.enableControllerService(writerService);
 		
-		final String mojo2RuntimeJarPath = "src/test/resources/TestExecuteDaiMojoScoringPipeline/mojo2-runtime.jar";
+		final String mojo2RuntimeJarPath = System.getProperty("user.home") + "/dai-mojo-nifi/mojo-pipeline/mojo2-runtime.jar";
 		runner.setProperty(ExecuteDaiMojoScoringPipeline.MODULE, mojo2RuntimeJarPath);
+
+		final String pipelineMojoPath = System.getProperty("user.home") + "/dai-mojo-nifi/mojo-pipeline/pipeline.mojo";
 		
-		// Include the filepath to pipeline.mojo that predicts the label for hydraulic cooling condition
-		final String pipelineMojoPath = "src/test/resources/TestExecuteDaiMojoScoringPipeline/hydraulic/coolingCondition/pipeline.mojo";
 		runner.setProperty(ExecuteDaiMojoScoringPipeline.PIPELINE_MOJO_FILEPATH, pipelineMojoPath);
 		runner.enqueue(new byte[0]);
 		
@@ -100,7 +100,8 @@ public class TestExecuteDaiMojoScoringPipeline {
 		runner.enableControllerService(writerService);
 		
 		// Include the invalid filepath to mojo2-runtime.jar
-		final String mojo2RuntimeJarPath = "src/test/resources/TestExecuteDaiMojoScoringPiplne/mojo2-runtmie.jar";
+		final String mojo2RuntimeJarPath = System.getProperty("user.home") + "/dai-nifi/mojo-pipeline/mojo2-runtime.jar";
+		
 		runner.setProperty(ExecuteDaiMojoScoringPipeline.MODULE, mojo2RuntimeJarPath);
 		runner.assertNotValid();
 	}
@@ -123,7 +124,7 @@ public class TestExecuteDaiMojoScoringPipeline {
 		// runner.setProperty(writerService, SchemaAccessUtils.SCHEMA_ACCESS_STRATEGY, SchemaAccessUtils.INHERIT_RECORD_SCHEMA);
 		runner.enableControllerService(writerService);
 		
-		final String mojo2RuntimeJarPath = "src/test/resources/TestExecuteDaiMojoScoringPipeline/mojo2-runtime.jar";
+		final String mojo2RuntimeJarPath = System.getProperty("user.home") + "/dai-mojo-nifi/mojo-pipeline/mojo2-runtime.jar";
 		runner.setProperty(ExecuteDaiMojoScoringPipeline.MODULE, mojo2RuntimeJarPath);
 		
 		// Include the invalid filepath to pipeline.mojo
@@ -140,7 +141,7 @@ public class TestExecuteDaiMojoScoringPipeline {
 		// runner.setProperty(writerService, SchemaAccessUtils.SCHEMA_ACCESS_STRATEGY, SchemaAccessUtils.INHERIT_RECORD_SCHEMA);
 		runner.enableControllerService(writerService);
 		
-		final String mojo2RuntimeJarPath = "src/test/resources/TestExecuteDaiMojoScoringPipeline/mojo2-runtime.jar";
+		final String mojo2RuntimeJarPath = System.getProperty("user.home") + "/dai-mojo-nifi/mojo-pipeline/mojo2-runtime.jar";
 		runner.setProperty(ExecuteDaiMojoScoringPipeline.MODULE, mojo2RuntimeJarPath);
 		
 		runner.setProperty(ExecuteDaiMojoScoringPipeline.PIPELINE_MOJO_FILEPATH, StringUtils.EMPTY);
@@ -154,11 +155,11 @@ public class TestExecuteDaiMojoScoringPipeline {
 		// runner.setProperty(writerService, SchemaAccessUtils.SCHEMA_ACCESS_STRATEGY, SchemaAccessUtils.INHERIT_RECORD_SCHEMA);
 		runner.enableControllerService(writerService);
 		
-		final String mojo2RuntimeJarPath = "src/test/resources/TestExecuteDaiMojoScoringPipeline/mojo2-runtime.jar";
+		final String mojo2RuntimeJarPath = System.getProperty("user.home") + "/dai-mojo-nifi/mojo-pipeline/mojo2-runtime.jar";
 		runner.setProperty(ExecuteDaiMojoScoringPipeline.MODULE, mojo2RuntimeJarPath);
 		
 		// Include the filepath to pipeline.mojo that predicts the label for hydraulic cooling condition
-		final String pipelineMojoPath = "src/test/resources/TestExecuteDaiMojoScoringPipeline/hydraulic/coolingCondition/pipeline.mojo";
+		final String pipelineMojoPath = System.getProperty("user.home") + "/dai-mojo-nifi/mojo-pipeline/pipeline.mojo";
 		runner.setProperty(ExecuteDaiMojoScoringPipeline.PIPELINE_MOJO_FILEPATH, pipelineMojoPath);
 		
 		runner.run();
@@ -174,11 +175,11 @@ public class TestExecuteDaiMojoScoringPipeline {
 		// runner.setProperty(writerService, SchemaAccessUtils.SCHEMA_ACCESS_STRATEGY, SchemaAccessUtils.INHERIT_RECORD_SCHEMA);
 		runner.enableControllerService(writerService);
 		
-		final String mojo2RuntimeJarPath = "src/test/resources/TestExecuteDaiMojoScoringPipeline/mojo2-runtime.jar";
+		final String mojo2RuntimeJarPath = System.getProperty("user.home") + "/dai-mojo-nifi/mojo-pipeline/mojo2-runtime.jar";
 		runner.setProperty(ExecuteDaiMojoScoringPipeline.MODULE, mojo2RuntimeJarPath);
 		
 		// Include the filepath to pipeline.mojo that predicts the label for hydraulic cooling condition
-		final String pipelineMojoPath = "src/test/resources/TestExecuteDaiMojoScoringPipeline/hydraulic/coolingCondition/pipeline.mojo";
+		final String pipelineMojoPath = System.getProperty("user.home") + "/dai-mojo-nifi/mojo-pipeline/pipeline.mojo";
 		runner.setProperty(ExecuteDaiMojoScoringPipeline.PIPELINE_MOJO_FILEPATH, pipelineMojoPath);
 		
 		runner.enqueue("");
@@ -196,11 +197,11 @@ public class TestExecuteDaiMojoScoringPipeline {
 		// runner.setProperty(writerService, SchemaAccessUtils.SCHEMA_ACCESS_STRATEGY, SchemaAccessUtils.INHERIT_RECORD_SCHEMA);
 		runner.enableControllerService(writerService);
 		
-		final String mojo2RuntimeJarPath = "src/test/resources/TestExecuteDaiMojoScoringPipeline/mojo2-runtime.jar";
+		final String mojo2RuntimeJarPath = System.getProperty("user.home") + "/dai-mojo-nifi/mojo-pipeline/mojo2-runtime.jar";
 		runner.setProperty(ExecuteDaiMojoScoringPipeline.MODULE, mojo2RuntimeJarPath);
 		
 		// Include the filepath to pipeline.mojo that predicts the label for hydraulic cooling condition
-		final String pipelineMojoPath = "src/test/resources/TestExecuteDaiMojoScoringPipeline/hydraulic/coolingCondition/pipeline.mojo";
+		final String pipelineMojoPath = System.getProperty("user.home") + "/dai-mojo-nifi/mojo-pipeline/pipeline.mojo";
 		runner.setProperty(ExecuteDaiMojoScoringPipeline.PIPELINE_MOJO_FILEPATH, pipelineMojoPath);
 		
 		readerService.failAfter(0);
@@ -218,7 +219,7 @@ public class TestExecuteDaiMojoScoringPipeline {
 		runner.enableControllerService(writerService);
 		
 		// Include the filepath to pipeline.mojo that predicts the label for hydraulic cooling condition
-		final String pipelineMojoPath = "src/test/resources/TestExecuteDaiMojoScoringPipeline/hydraulic/coolingCondition/pipeline.mojo";
+		final String pipelineMojoPath = System.getProperty("user.home") + "/dai-mojo-nifi/mojo-pipeline/pipeline.mojo";
 		runner.setProperty(ExecuteDaiMojoScoringPipeline.PIPELINE_MOJO_FILEPATH, pipelineMojoPath);
 		runner.assertNotValid();
 	}
@@ -230,7 +231,7 @@ public class TestExecuteDaiMojoScoringPipeline {
 		// runner.setProperty(writerService, SchemaAccessUtils.SCHEMA_ACCESS_STRATEGY, SchemaAccessUtils.INHERIT_RECORD_SCHEMA);
 		runner.enableControllerService(writerService);
 		
-		final String mojo2RuntimeJarPath = "src/test/resources/TestExecuteDaiMojoScoringPipeline/mojo2-runtime.jar";
+		final String mojo2RuntimeJarPath = System.getProperty("user.home") + "/dai-mojo-nifi/mojo-pipeline/mojo2-runtime.jar";
 		runner.setProperty(ExecuteDaiMojoScoringPipeline.MODULE, mojo2RuntimeJarPath);
 		runner.assertNotValid();
 	}
