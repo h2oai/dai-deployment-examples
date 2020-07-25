@@ -81,12 +81,14 @@
         </dependency>
 		<dependency>
 			<!--  
-				Needed to tell maven this JAR file will be provided by the user.
-				Later the user will insert filepath to JAR into NiFi property MODULE
+				Needed to tell maven this mojo2-runtime-api JAR file will be provided by the user.
+				Later the user will insert filepath of the JAR into NiFi property MODULE of this processor. 
+				Get the mojo2-runtime-api version from the mojo2-runtime-javadoc inside the MOJO Scoring Pipeline 
+				folder downloaded from Driverless AI if you need to update this dependency version.
 			-->
 			<groupId>ai.h2o</groupId>
 			<artifactId>mojo2-runtime-api</artifactId>
-			<version>2.4.0</version>
+			<version>2.2.0</version>
 			<scope>provided</scope>
 		</dependency>        
     </dependencies>

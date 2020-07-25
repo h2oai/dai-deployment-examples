@@ -13,7 +13,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.nifi.annotation.behavior.EventDriven;
 import org.apache.nifi.annotation.behavior.InputRequirement;
 import org.apache.nifi.annotation.behavior.RequiresInstanceClassLoading;
@@ -42,8 +41,11 @@ import org.apache.nifi.serialization.RecordReader;
 import org.apache.nifi.serialization.RecordReaderFactory;
 import org.apache.nifi.serialization.RecordSetWriter;
 import org.apache.nifi.serialization.RecordSetWriterFactory;
+import org.apache.nifi.serialization.SimpleRecordSchema;
 import org.apache.nifi.serialization.WriteResult;
+import org.apache.nifi.serialization.record.DataType;
 import org.apache.nifi.serialization.record.Record;
+import org.apache.nifi.serialization.record.RecordField;
 import org.apache.nifi.serialization.record.RecordFieldType;
 import org.apache.nifi.serialization.record.RecordSchema;
 import org.apache.nifi.serialization.record.util.DataTypeUtils;
@@ -53,6 +55,7 @@ import org.apache.nifi.util.StopWatch;
 import ai.h2o.mojos.runtime.MojoPipeline;
 import ai.h2o.mojos.runtime.frame.MojoFrame;
 import ai.h2o.mojos.runtime.frame.MojoFrameBuilder;
+import ai.h2o.mojos.runtime.frame.MojoFrameMeta;
 import ai.h2o.mojos.runtime.frame.MojoColumn;
 import ai.h2o.mojos.runtime.frame.MojoRowBuilder;
 import ai.h2o.mojos.runtime.lic.LicenseException;
@@ -130,6 +133,12 @@ public class ExecuteDaiMojoScoringPipeline extends AbstractProcessor {
 	// Declare Mojo Pipeline model instance
 	private MojoPipeline model;
 	
+	// Declare Mojo Pipeline model UUID
+	private String mojoPipelineUUID;
+	
+	// Declare scored Mojo Record Schema
+	private RecordSchema scoredMojoRecordSchema;
+	
 	static {
 		ArrayList<PropertyDescriptor> _properties = new ArrayList<>();
 		_properties.add(RECORD_READER);
@@ -159,15 +168,69 @@ public class ExecuteDaiMojoScoringPipeline extends AbstractProcessor {
 	public void onScheduled(final ProcessContext context) {
 		// gets called once when the processor is scheduled to run
 		
-		final String pipelineMojoPath = context.getProperty(PIPELINE_MOJO_FILEPATH).getValue();
-		
-		// Load Mojo Pipeline model (includes feature engineering + ML model)
 		try {
+			// Load Mojo Pipeline model (includes feature engineering + ML model)
+			final String pipelineMojoPath = context.getProperty(PIPELINE_MOJO_FILEPATH).getValue();
 			model = MojoPipeline.loadFrom(pipelineMojoPath);
+			
+			// Get Mojo Pipeline model UUID
+			mojoPipelineUUID = "pipeline.mojo uuid " + model.getUuid();
+			
+			// Convert MojoFrameMeta to NiFi RecordSchema
+			scoredMojoRecordSchema = convertMojoFrameMetaToRecordSchema();
+
 		} catch (Exception e) {
-			getLogger().error("Unable to load MOJO from pipelineMojoPath due to " + e.toString());
+			getLogger().error("Unable to load MOJO from pipelineMojoPath or " + "Unable to get MOJO Pipeline Model UUID or " +
+							  "Unable to convert MojoFrameMeta to NiFi RecordSchema due to " + e.toString());
 		}
-		
+	}
+	
+	private RecordSchema convertMojoFrameMetaToRecordSchema() {
+		// Need a list of record fields to create a record schema for output write schema
+		List<RecordField> scoredMojoFrameFields = new ArrayList<>();
+		// Get scored Meta Data for the Output MojoFrame
+		MojoFrameMeta scoredMojoFrameMeta = model.getOutputMeta();
+		// NiFi DataType
+		DataType scoredColumnDataType = null;
+
+		for (int nCol = 0; nCol < scoredMojoFrameMeta.size(); nCol++) {
+			String scoredMojoFrameColumnName = scoredMojoFrameMeta.getColumnName(nCol);
+			MojoColumn.Type scoredMojoFrameColumnType = scoredMojoFrameMeta.getColumnType(nCol);
+
+			// Check MojoFrame Column Data Type at a index using MojoColumn.Type enum {Bool, Int32, Int64, Float32, Float64, Str}
+			// Assign NiFi Data Type based on MojoColumn.Type
+			switch (scoredMojoFrameColumnType) {
+			case Bool:
+				scoredColumnDataType = RecordFieldType.BOOLEAN.getDataType();
+				break;
+			case Int32:
+				scoredColumnDataType = RecordFieldType.INT.getDataType();
+				break;
+			case Int64:
+				scoredColumnDataType = RecordFieldType.LONG.getDataType();
+				break;
+			case Float32:
+				scoredColumnDataType = RecordFieldType.FLOAT.getDataType();
+				break;
+			case Float64:
+				scoredColumnDataType = RecordFieldType.DOUBLE.getDataType();
+				break;
+			case Str:
+				scoredColumnDataType = RecordFieldType.STRING.getDataType();
+				break;
+			default:
+				getLogger().error("Mojo Column Type is not supported, so couldn't get NiFi Data Type.");
+				break;
+			}
+
+			if (scoredColumnDataType == null) {
+				throw new ProcessException("Error converting MojoFrame Column Data Type to NiFi Data Type");
+			}
+
+			RecordField scoredMojoFrameField = new RecordField(scoredMojoFrameColumnName, scoredColumnDataType);
+			scoredMojoFrameFields.add(scoredMojoFrameField);
+		}
+		return new SimpleRecordSchema(scoredMojoFrameFields);
 	}
 	
 	@Override
@@ -211,14 +274,9 @@ public class ExecuteDaiMojoScoringPipeline extends AbstractProcessor {
 			final WriteResult writeResult;
 			scored = session.create(original);
 			
-			// We want to score the first record before creating the Record Writer. We do this because the Record will 
-			// likely end up with a different structure and therefore a different Schema after being scored. As a result,
-			// we want to score the Record and then provide the scored schema to the Record Writer so that if the Record
-			// Writer chooses to inherit the Record Schema from the Record itself, it will inherit the scored schema, not
-			// the schema determined by the Record Reader
-			final Record firstRecord = reader.nextRecord();
+			Record record = reader.nextRecord();
 			
-			if(firstRecord == null) {
+			if(record == null) {
 				try (final OutputStream out = session.write(scored);
 					 final RecordSetWriter writer = writerFactory.createWriter(getLogger(), schema, out, scored)
 					) {
@@ -233,21 +291,10 @@ public class ExecuteDaiMojoScoringPipeline extends AbstractProcessor {
 				logger.info("{} had no Records to score", new Object[]{original});
 			}
 			else {
-				final String mojoPipelineUUID = "pipeline.mojo uuid " + model.getUuid();
-				
-				// Convert input Record to MojoFrame
-				final MojoFrame firstMojoFrame = convertRecordToMojoFrame(firstRecord);
-				
-				// Execute prediction on first mojo frame using Driverless AI MOJO Scoring Pipeline "model"
-				final MojoFrame scoredFirstMojoFrame = predict(firstMojoFrame, model);
-				
-				// Convert scored MojoFrame to Record
-				final Record scoredFirstRecord = convertMojoFrameToRecord(scoredFirstMojoFrame, logger);
-				
-				if(scoredFirstRecord == null) {
-					throw new ProcessException("Error scoring the first record");
-				}
-				final RecordSchema writeSchema = writerFactory.getSchema(original.getAttributes(), scoredFirstRecord.getSchema());
+				// Create the writeSchema based on the scored MojoFrame Record Schema so that if the Record Set Writer chooses
+				// to Inherit Record Schema, it will inherit the Record Schema from the MojoPipeline model because the model
+				// already knows the MojoFrame Meta Data (it gets converted to NiFi Record Schema)
+				final RecordSchema writeSchema = writerFactory.getSchema(original.getAttributes(), scoredMojoRecordSchema);
 				
 				// try-with-resources block opens RecordSetWriter, writes the scoredRecords to the given output stream,
 				// and closes RecordSetWriter automatically once execution leaves try-with-resources block
@@ -256,10 +303,6 @@ public class ExecuteDaiMojoScoringPipeline extends AbstractProcessor {
 					 final RecordSetWriter writer = writerFactory.createWriter(getLogger(), writeSchema, out, scored)
 				    ) {
 					writer.beginRecordSet();
-					
-					writer.write(scoredFirstRecord);
-					
-					Record record = reader.nextRecord();
 					
 					while(record != null) {
 						// Convert input Record to MojoFrame
