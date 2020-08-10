@@ -6,13 +6,13 @@ Deploy the Driverless AI MOJO Scoring Pipeline to Apache Flink by using the MOJO
 
 ## Prerequisites
 
-- Driverless AI Environment
+- Driverless AI Environment (Tested with Driverless AI 1.8.7.1, MOJO Scoring Pipeline 2.4.2)
 
 - Launch Ubuntu 18.04 Linux EC2 instance
     - Instance Type: t2.2xlarge
     - Storage: 256GB
-    - Open custom TCP port 8080 and source on 0.0.0.0/0
-- Download the Driverless AI Deployment Repo to your local machine since we will be using the NiFi Data Flow xml templates that come with mojo-nifi/ folder.
+    - Open custom TCP port 8081 and source on 0.0.0.0/0
+- Download the Driverless AI Deployment Repo to your local machine since we will be using the Flink Data Pipeline java programs that come with mojo-flink/ folder.
 
 ~~~bash
 git clone -b mojo-flink https://github.com/james94/dai-deployment-examples/
@@ -105,7 +105,7 @@ scp -i $H2O_DAI_SCORING_PEM $HOME/Downloads/mojo.zip ubuntu@$H2O_DAI_SCORING_INS
 
 ~~~bash
 sudo apt -y install unzip
-cd /home/ubuntu/daimojo-nifi/
+cd /home/ubuntu/daimojo-flink/
 unzip mojo.zip
 ~~~
 

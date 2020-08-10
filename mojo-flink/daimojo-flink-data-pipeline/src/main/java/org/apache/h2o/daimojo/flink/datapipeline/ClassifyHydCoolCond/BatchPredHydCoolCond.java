@@ -27,7 +27,7 @@ public class BatchPredHydCoolCond {
 		final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
 		
 		String homePath = System.getProperty("user.home");
-		File pipelineMojoPath = new File(homePath + "/daimojo-flink/DAI-1.8.7.1/mojo-pipeline/pipeline.mojo");
+		File pipelineMojoPath = new File(homePath + "/daimojo-flink/mojo-pipeline/pipeline.mojo");
 		MojoPipeline daiMojoModel = MojoPipelineService.loadPipeline(pipelineMojoPath);
 		
 		Configuration config = new Configuration();
