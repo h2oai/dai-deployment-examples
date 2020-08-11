@@ -232,7 +232,7 @@ For Driverless AI MOJO batch scoring in Flink, we will run the following Flink M
 1\. Run the following command to submit the **Flink MOJO Batch Scoring Job** to the Flink Cluster JobManager for execution:
 
 ~~~bash
-./bin/flink run -c org.apache.h2o.daimojo.flink.datapipeline.ClassifyHydCoolCond.BatchPredHydCoolCond $HOME/dai-deployment-examples/mojo-flink/daimojo-flink-data-pipeline/target/daimojo-flink-data-pipeline-1.11.1.jar
+$HOME/flink-1.11.1/bin/flink run -c org.apache.h2o.daimojo.flink.datapipeline.ClassifyHydCoolCond.BatchPredHydCoolCond $HOME/dai-deployment-examples/mojo-flink/daimojo-flink-data-pipeline/target/daimojo-flink-data-pipeline-1.11.1.jar
 ~~~
 
 2\. Once the Flink job finishes running, it will transition to the Completed Job List:
@@ -258,7 +258,7 @@ For Driverless AI MOJO batch scoring in Flink, we will run the following Flink M
 1\. Run the following command to submit the Flink MOJO Stream Scoring Job for execution:
 
 ~~~bash
-./bin/flink run -c org.apache.h2o.daimojo.flink.datapipeline.ClassifyHydCoolCond.RealTimePredHydCoolCond $HOME/dai-deployment-examples/mojo-flink/daimojo-flink-data-pipeline/target/daimojo-flink-data-pipeline-1.11.1.jar
+$HOME/flink-1.11.1/bin/flink run -c org.apache.h2o.daimojo.flink.datapipeline.ClassifyHydCoolCond.RealTimePredHydCoolCond $HOME/dai-deployment-examples/mojo-flink/daimojo-flink-data-pipeline/target/daimojo-flink-data-pipeline-1.11.1.jar
 ~~~
 
 2\. Once the Flink job finishes running, it will transition to the Completed Job List:
