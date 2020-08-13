@@ -23,46 +23,68 @@ import ai.h2o.mojos.runtime.lic.LicenseException;
  */
 public class BatchPredHydCoolCond {
 
-	public static void main(String[] args) throws IOException, LicenseException, Exception {
+	private static final String homePath = System.getProperty("user.home");
+	private static Configuration config = new Configuration();
+	
+	public static void main(String[] args) throws IOException, LicenseException, JobExecutionException {
 		final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
 		
-		String homePath = System.getProperty("user.home");
-		File pipelineMojoPath = new File(homePath + "/daimojo-flink/mojo-pipeline/pipeline.mojo");
-		MojoPipeline daiMojoModel = MojoPipelineService.loadPipeline(pipelineMojoPath);
+		File pathToDaiMojo = new File(homePath + "/daimojo-flink/mojo-pipeline/pipeline.mojo");
 		
-		Configuration config = new Configuration();
-		config.setBoolean("skipFirstLineHeader", true);
+		DataSet<String> hydPredHeader = getPredHeader(pathToDaiMojo, env, "Get Pred Header via DAI MOJO");
 		
-		// Pull in Batch data, meaning each file has multiple rows of data
-		// Reads Text File line by line and stores it into DataSet<String> in order due to parallelism being 1
-		// If parallelism is blank, then flink local mode will set parallelism to number of cpu cores causing unsorted output
 		String pathToHydraulicData = homePath + "/daimojo-flink/testData/test-batch-data/example.csv";
-		DataSet<String> hydraulic = env.readTextFile(pathToHydraulicData).setParallelism(1).name("Get Batch Data");
+		DataSet<String> hydraulic = getBatchData(env, pathToHydraulicData, "Get Batch Data");
 		
-		// Filter out header of csv data set
-		DataSet<String> hydraulicFiltered = hydraulic.filter(new FilterHeader(BatchPredHydCoolCond.class))
-				.withParameters(config)
-				.name("Filter Out Header");
+		DataSet<String> hydHeadFiltered = filterOutHeader(true, hydraulic, "Filter Out Input Header");
 		
-		// Perform Predictions on incoming hydraulic system data using Driverless AI MOJO Scoring Pipeline
-		// Note: The user defined MojoTransform function, which inherits from Flink's RichMapFunction is leveraged
-		DataSet<String> predHydraulic = hydraulicFiltered.map(new MojoTransform(pipelineMojoPath, BatchPredHydCoolCond.class))
-				.name("Execute DAI Mojo Batch Scoring");
-
-		// Create prediction header using Collection of Strings
+		DataSet<String> predHydraulic = predictBatchData(hydHeadFiltered, pathToDaiMojo, "Run DAI MOJO Batch Scoring");
+		
+		DataSet<String> batchScores = prependPredHeader(hydPredHeader, predHydraulic, "Prepend Pred Header to Batch Scores");
+		
+		batchScores.printOnTaskManager("Batch Score: ").name("Print Batch Scores");
+		
+		executeFlinkBatchJob(env, "Deploy DAI Mojo SP within a Flink Batch ETL Pipeline");
+	}
+	
+	/*
+	 * Pull in Batch data, meaning each file has multiple rows of data
+	 * Reads Text File line by line and stores it into DataSet<String> in order due to parallelism being 1
+	 * If parallelism is blank, then flink local mode will set parallelism to number of cpu cores causing unsorted output
+	 */
+	private static DataSet<String> getBatchData(ExecutionEnvironment env, String pathToData, String operatorName) {
+		return env.readTextFile(pathToData).setParallelism(1).name(operatorName);
+	}
+	
+	// Filter out header from csv data set
+	private static DataSet<String> filterOutHeader(boolean skipFirstLine, DataSet<String> dataSet, String operatorName) {
+		config.setBoolean("skipFirstLineHeader", skipFirstLine);
+		return dataSet.filter(new FilterHeader()).withParameters(config).name(operatorName);
+	}
+	
+	// Perform Predictions on incoming hydraulic system data using Driverless AI MOJO Scoring Pipeline
+	private static DataSet<String> predictBatchData(DataSet<String> dataSet, File pathToMojoScorer, String operatorName) {
+		DaiMojoTransform daiMojoTransform = new DaiMojoTransform(pathToMojoScorer);
+		return dataSet.map(daiMojoTransform).name(operatorName);
+	}
+	
+	// Create prediction header using Collection of Strings
+	private static DataSet<String> getPredHeader(File pathToMojoScorer, ExecutionEnvironment env, String operatorName) throws IOException, LicenseException {
+		MojoPipeline daiMojoModel = MojoPipelineService.loadPipeline(pathToMojoScorer);
 		MojoFrameMeta predMojoFrameMeta = daiMojoModel.getOutputMeta();
 		String predHeader = Arrays.toString(predMojoFrameMeta.getColumnNames());
 		predHeader = predHeader.replaceAll("\\[", "").replaceAll("\\]", "").replaceAll("\\s+", "");
 		
 		Collection<String> predHydHeader = Arrays.asList(predHeader);
-		DataSet<String> predlHydLabels = env.fromCollection(predHydHeader).name("Get Predicted Labels from Mojo");
-		
-		// Prepend predicted header predlHydLabels to DataSet predHydraulic
-		DataSet<String> batchScores = predlHydLabels.union(predHydraulic).name("Prepend Predicted Labels to Batch Data");
-		
-//		batchScores.writeAsText(homePath + "/daimojo-flink/batch-scores/hyd-cool-cond/predHydCoolCond.csv").setParallelism(1);
-		batchScores.printOnTaskManager("Batch Score: ").name("Print Batch Scores");
-		String jobName = "Deploy DAI Mojo SP within a Flink Batch ETL Pipeline";
+		return env.fromCollection(predHydHeader).name(operatorName);
+	}
+	
+	// Prepend predicted header predlHydLabels to DataSet predHydraulic
+	private static DataSet<String> prependPredHeader(DataSet<String> predHeader, DataSet<String> predDataSet, String operatorName) {
+		return predHeader.union(predDataSet).name(operatorName);
+	}
+	
+	private static void executeFlinkBatchJob(ExecutionEnvironment env, String jobName) throws JobExecutionException {
 		try {
 			env.execute(jobName);
 		} catch (Exception e) {

@@ -31,4 +31,4 @@ deployment templates.
    - Available Examples:
       - [EC2 Ubuntu HTTP Server](./python-scoring-pipeline/http_ec2_ubuntu.md)
 - [Flink Custom RichMapFunction for Running the MOJO in Flink Data Pipeline](./mojo-flink)
-   - This example will walkthrough how to use a Flink custom RichMapFunction to execute the MOJO Scoring Pipeline within a Flink Data Pipeline to do batch scoring and real-time scoring.
+   - This example will walk through how to use a Flink custom RichMapFunction to execute the MOJO Scoring Pipeline within a Flink Data Pipeline to do batch scoring and real-time scoring.

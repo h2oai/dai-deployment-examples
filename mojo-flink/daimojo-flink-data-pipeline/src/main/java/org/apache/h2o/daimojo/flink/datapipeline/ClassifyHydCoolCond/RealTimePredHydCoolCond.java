@@ -22,35 +22,54 @@ import ai.h2o.mojos.runtime.lic.LicenseException;
  */
 public class RealTimePredHydCoolCond {
 
+	private static final String homePath = System.getProperty("user.home");
 	public static void main(String[] args) throws IOException, LicenseException, JobExecutionException {
 		final StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
-		String homePath = System.getProperty("user.home");
-		File pipelineMojoPath = new File(homePath + "/daimojo-flink/mojo-pipeline/pipeline.mojo");
-		MojoPipeline daiMojoModel = MojoPipelineService.loadPipeline(pipelineMojoPath);
 		
-		// Pulling in Real-Time data, meaning each file has an individual row of data
+		File pathToDaiMojo = new File(homePath + "/daimojo-flink/mojo-pipeline/pipeline.mojo");
+		
+		DataStream<String> hydPredHeader = getPredHeader(pathToDaiMojo, env, "Get Pred Header via DAI MOJO");
+		
 		String pathToHydraulicData = homePath + "/daimojo-flink/testData/test-real-time-data/";
-		DataStream<String>hydraulic = env.readTextFile(pathToHydraulicData).name("Get Real-Time Data");
+		DataStream<String>hydraulic = getRealTimeData(env, pathToHydraulicData, "Get Real-Time Data");
 		
-		// Perform Predictions on incoming hydraulic system data using Driverless AI MOJO Scoring Pipeline
-		// Note: The user defined MojoTransform function, which inherits from Flink's RichMapFunction is leveraged
-		DataStream<String> predHydraulic = hydraulic.map(new MojoTransform(pipelineMojoPath, RealTimePredHydCoolCond.class))
-				.name("Execute DAI Mojo Real-Time Scoring");
+		DataStream<String> predHydraulic = predictRealTimeData(hydraulic, pathToDaiMojo, "Run DAI Mojo Real-Time Scoring");
+		
+		DataStream<String> streamScores = prependPredHeader(hydPredHeader, predHydraulic); // Prepend Pred Header to Real-Time Scores
+		
+		streamScores.print("Real-Time Score: ").name("Print Real-Time Scores");
+		
+		executeFlinkStreamJob(env, "Deploy DAI Mojo SP within a Flink Streaming Data Pipeline");
+	}
 	
-		// Create prediction header using Collection of Strings
+	// Pulling in Real-Time data, meaning each file has an individual row of data
+	private static DataStream<String> getRealTimeData(StreamExecutionEnvironment env, String pathToData, String operatorName) {
+		return env.readTextFile(pathToData).name(operatorName);
+	}
+	
+	// Perform Predictions on incoming hydraulic system data using Driverless AI MOJO Scoring Pipeline
+	private static DataStream<String> predictRealTimeData(DataStream<String> dataStream, File pathToMojoScorer, String operatorName) {
+		DaiMojoTransform daiMojoTransform = new DaiMojoTransform(pathToMojoScorer);
+		return dataStream.map(daiMojoTransform).name(operatorName);
+	}
+	
+	// Create prediction header using Collection of Strings
+	private static DataStream<String> getPredHeader(File pathToMojoScorer, StreamExecutionEnvironment env, String operatorName) throws IOException, LicenseException {
+		MojoPipeline daiMojoModel = MojoPipelineService.loadPipeline(pathToMojoScorer);
 		MojoFrameMeta predMojoFrameMeta = daiMojoModel.getOutputMeta();
 		String predHeader = Arrays.toString(predMojoFrameMeta.getColumnNames());
 		predHeader = predHeader.replaceAll("\\[", "").replaceAll("\\]", "").replaceAll("\\s+", "");
 		
-		Collection<String>  predHydHeader = Arrays.asList(predHeader);
-		DataStream<String> predlHydLabels = env.fromCollection(predHydHeader).name("Get Predicted Labels from Mojo");
-		
-		// Prepend predicted header to DataStream predHydraulic
-		DataStream<String> streamScores = predlHydLabels.union(predHydraulic);
-		
-		// predHydraulic.writeAsText(homePath + "/daimojo-flink/stream-scores/hyd-cool-cond/predHydCoolCond.csv").setParallelism(1);
-		streamScores.print("Real-Time Score").name("Print Real-Time Scores");
-		String jobName = "Deploy DAI Mojo SP within a Flink Streaming Data Pipeline";
+		Collection<String> predHydHeader = Arrays.asList(predHeader);
+		return env.fromCollection(predHydHeader).name(operatorName);
+	}
+	
+	// Prepend predicted header hydPredHeader to DataStream predHydraulic
+	private static DataStream<String> prependPredHeader(DataStream<String> predHeader, DataStream<String> predDataStream) {
+		return predHeader.union(predDataStream);
+	}
+	
+	private static void executeFlinkStreamJob(StreamExecutionEnvironment env, String jobName) throws JobExecutionException {
 		try {
 			env.execute(jobName);
 		} catch (Exception e) {

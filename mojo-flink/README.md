@@ -4,6 +4,10 @@
 
 Deploy the Driverless AI MOJO Scoring Pipeline to Apache Flink by using the MOJO2 Java Runtime API and a custom Flink RichMapFunction. This will be a Cloudera Integration point for Cloudera Data Flow (CDF), particulary Cloudera Streaming Analytics(CSA). CSA is powered by Apache Flink.
 
+## Video Walkthrough
+
+The following link is a YouTube video that shows how to deploy the Driverless AI MOJO to Flink to do batch and real-time scoring on Hydraulic System data to classify for Hydraulic Cooling Condition: [Flink Custom RichMapFunction for Running the Driverless AI MOJO in Flink Data Pipeline](https://youtu.be/RU6Q4UrhCEs)
+
 ## Prerequisites
 
 - Driverless AI Environment (Tested with Driverless AI 1.8.7.1, MOJO Scoring Pipeline 2.4.2)
@@ -25,10 +29,7 @@ git clone -b mojo-flink https://github.com/james94/dai-deployment-examples/
 1\. Move the EC2 Pivate Key File (Pem Key) to the .ssh folder
 
 ~~~bash
-# Move Private Key to .ssh folder
 mv $HOME/Downloads/{private-key-filename}.pem $HOME/.ssh/
-
-# Set Private Key permissions to 400 to avoid SSH permission denied
 chmod 400 $HOME/.ssh/{private-key-filename}.pem
 ~~~
 
@@ -197,11 +198,8 @@ cp $HOME/daimojo-flink/mojo-pipeline/example.csv .
 # remove file's 1st line, the header
 echo -e "$(sed '1d' example.csv)\n" > example.csv
 
-# split example.csv into smaller real-time files each with 1 line
-split -l 1 example.csv test_
-
-# add .csv extension to all test_* files in folder
-for f in test* ; do mv "$f" "${f}.csv"; done
+# on linux, split file into multiple files having 1 row of data with numeric suffix and .csv extension
+split -dl 1 --additional-suffix=.csv example.csv test_
 
 # remove example.csv from real-time input dir
 rm -rf example.csv
@@ -272,3 +270,7 @@ $HOME/flink-1.11.1/bin/flink run -c org.apache.h2o.daimojo.flink.datapipeline.Cl
 4\. View the Real-Time Scores for Hydraulic Cooling Condition by looking at the TaskManager's Stdout:
 
 ![DAI MOJO Flink Stream Scores](./images/dai-mojo-flink-stream-scores.jpg)
+
+## Conclusion
+
+Congratulations, we just deployed a **Driverless AI MOJO Scoring Pipeline** within a **Flink Data Pipeline** to do **batch scoring** or **real-time scoring**. As a recap, we set up the environment in an AWS EC2 instance by setting up the Driverless AI MOJO Scoring Pipeline requirements, setting up a single node Flink cluster and preparing some test data to be used for batch scoring or real-time scoring. With the environment setup, we were able to use a custom Flink DaiMojoTransform RichMapFunction within a Flink Batch ETL Pipeline and a Flink Real-Time Data Pipeline to score our data. From Flink's UI, we were able to see the results from batch scoring and real-time scoring printed to the stdout of Flink's TaskManager.

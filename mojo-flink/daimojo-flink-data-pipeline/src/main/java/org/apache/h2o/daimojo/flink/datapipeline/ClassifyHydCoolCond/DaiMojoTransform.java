@@ -21,17 +21,19 @@ import ai.h2o.mojos.runtime.frame.MojoRowBuilder;
 import ai.h2o.mojos.runtime.lic.LicenseException;
 
 @SuppressWarnings("serial")
-public class MojoTransform extends RichMapFunction<String, String> {
+public class DaiMojoTransform extends RichMapFunction<String, String> {
 	private MojoPipeline model;
-	private File pipelineMojoFilePath;
+	private final File pipelineMojoFilePath;
 	private MojoFrameMeta inMojoFrameMeta;
 	
-	public MojoTransform(File pipelineMojoPath, Class<?> clazz) {
+	public DaiMojoTransform(File pipelineMojoPath) {
 		pipelineMojoFilePath = pipelineMojoPath;
 	}
 	
-	// Initialization method for the function.
-	// It is called one time before the actual working method (map) and suitable for one time setup
+	/* 
+	 * Initialization method for the function. 
+	 * It is called one time before the actual working method (map) and suitable for one time setup
+	 */
 	@Override
 	public void open(Configuration parameters) throws IOException, LicenseException {
 		model = MojoPipelineService.loadPipeline(pipelineMojoFilePath);
@@ -75,19 +77,20 @@ public class MojoTransform extends RichMapFunction<String, String> {
 		String[] data = new String[outputFrame.getNcols()];
 
 		// Iterate over all columns in current row, store data into String data arr
-		int mojoFrameRow = 0;
 		for(int colN = 0; colN < outputFrame.getNcols(); colN++) {
 			MojoColumn col = outputFrame.getColumn(colN);
 			String[] colDataStrArr = col.getDataAsStrings();
-			data[colN] = colDataStrArr[mojoFrameRow];
+			data[colN] = colDataStrArr[0];
 		}
 		
-		// Convert 1D String data array into String
-		StringBuilder sb = new StringBuilder();
-		String rowStr = Arrays.toString(data);
-		rowStr = rowStr.replaceAll("\\[", "").replaceAll("\\]", "").replaceAll("\\s+", "");
-		sb.append(rowStr);
+		String rowStr = stringArrToString(data);
 		
-		return sb.toString();
+		return rowStr;
+	}
+	
+	// Convert 1D String data array into String
+	private String stringArrToString(String[] data) {
+		String rowStr = Arrays.toString(data);
+		return rowStr.replaceAll("\\[", "").replaceAll("\\]", "").replaceAll("\\s+", "");
 	}
 }
