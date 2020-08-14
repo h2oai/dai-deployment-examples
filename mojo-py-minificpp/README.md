@@ -12,11 +12,13 @@ The following link is a YouTube video that shows how to deploy the Driverless AI
 
 ## Prerequisites
 
-- Driverless AI Environment
+- Driverless AI Environment (Tested with Driverless AI 1.8.7.1, MOJO Scoring Pipeline 2.4.2)
 
-- Recommended: Launch Ubuntu 18.04 Linux EC2 instance
-
-- Recommended: Create Anaconda or Miniconda Environment
+- Launch Ubuntu 18.04 Linux EC2 instance
+    - Instance Type: t2.2xlarge
+    - Storage: 256GB
+    - Open custom TCP port `10080` for `EFM Server HTTP` and source on `0.0.0.0` to listen on all network interfaces
+    - Open custom TCP port `8989` for `EFM Server Constraint application protocol (CoAP)` and source on `0.0.0.0` to listen on all network interfaces
 
 ## Task 1: Set Up Environment
 
@@ -25,10 +27,7 @@ The following link is a YouTube video that shows how to deploy the Driverless AI
 1\. Move the **EC2 Pivate Key File (Pem Key)** to the .ssh folder
 
 ~~~bash
-# Move Private Key to .ssh folder
 mv $HOME/Downloads/{private-key-filename}.pem $HOME/.ssh/
-
-# Set Private Key permissions to 400 to avoid SSH permission denied
 chmod 400 $HOME/.ssh/{private-key-filename}.pem
 ~~~
 
@@ -38,17 +37,17 @@ chmod 400 $HOME/.ssh/{private-key-filename}.pem
 # For Mac OS X, set permanent environment variables 
 tee -a $HOME/.bash_profile << EOF
 # Set EC2 Public DNS
-export H2O_DAI_SCORING_INSTANCE={EC2 Public DNS}.compute.amazon.com
+export DAI_MOJO_MINIFI_INSTANCE={EC2 Public DNS}.compute.amazon.com
 # Set EC2 Pem Key
-export H2O_DAI_SCORING_PEM=$HOME/.ssh/{private-key-filename}.pem
+export DAI_MOJO_MINIFI_PEM=$HOME/.ssh/{private-key-filename}.pem
 EOF
 
 # For Linux, set permanent environment variables
 tee -a $HOME/.profile << EOF
 # Set EC2 Public DNS
-export H2O_DAI_SCORING_INSTANCE={EC2 Public DNS}.compute.amazon.com
+export DAI_MOJO_MINIFI_INSTANCE={EC2 Public DNS}.compute.amazon.com
 # Set EC2 Pem Key
-export H2O_DAI_SCORING_PEM=$HOME/.ssh/{private-key-filename}.pem
+export DAI_MOJO_MINIFI_PEM=$HOME/.ssh/{private-key-filename}.pem
 EOF
 
 source $HOME/.bash_profile
@@ -58,7 +57,7 @@ source $HOME/.bash_profile
 
 ~~~bash
 # Connect to EC2 instance using SSH
-ssh -i $H2O_DAI_SCORING_PEM ubuntu@$H2O_DAI_SCORING_INSTANCE
+ssh -i $DAI_MOJO_MINIFI_PEM ubuntu@$DAI_MOJO_MINIFI_INSTANCE
 ~~~
 
 ### Create Environment Directory Structure
@@ -68,11 +67,9 @@ ssh -i $H2O_DAI_SCORING_PEM ubuntu@$H2O_DAI_SCORING_INSTANCE
 ~~~bash
 # Create directory structure for DAI MOJO MiNiFi CPP Projects
 
-# Create directory where the pipeline.mojo will be stored
-mkdir /home/ubuntu/dai-mojo-minificpp/
+mkdir $HOME/daimojo-minificpp/
 
-# Create input directory used for batch scoring or real-time scoring
-mkdir -p /home/ubuntu/dai-mojo-minificpp/testData/{test-batch-data,test-real-time-data}
+mkdir -p $HOME/daimojo-minificpp/testData/{test-batch-data,test-real-time-data}
 ~~~
 
 ### Set Up Driverless AI MOJO Scoring Pipeline in EC2
@@ -98,13 +95,13 @@ https://raw.githubusercontent.com/james94/driverlessai-recipes/master/data/hydra
 
 ~~~bash
 # Move Driverless AI MOJO Scoring Pipeline to EC2 instance
-scp -i $H2O_DAI_SCORING_PEM $HOME/Downloads/mojo.zip ubuntu@$H2O_DAI_SCORING_INSTANCE:/home/ubuntu/dai-mojo-minificpp/
+scp -i $DAI_MOJO_MINIFI_PEM $HOME/Downloads/mojo.zip ubuntu@$DAI_MOJO_MINIFI_INSTANCE:/home/ubuntu/daimojo-minificpp/
 ~~~
 
 - 2b\. Unzip **mojo.zip**.
 
 ~~~bash
-cd /home/ubuntu/dai-mojo-minificpp/
+cd /home/ubuntu/daimojo-minificpp/
 unzip mojo.zip
 ~~~
 
@@ -114,20 +111,28 @@ unzip mojo.zip
 
 ~~~bash
 # Move Driverless AI MOJO2 Python Runtime to EC2 instance
-scp -i $H2O_DAI_SCORING_PEM $HOME/Downloads/daimojo-2.2.0-cp36-cp36m-linux_x86_64.whl ubuntu@$H2O_DAI_SCORING_INSTANCE:/home/ubuntu
+scp -i $DAI_MOJO_MINIFI_PEM $HOME/Downloads/daimojo-2.2.0-cp36-cp36m-linux_x86_64.whl ubuntu@$DAI_MOJO_MINIFI_INSTANCE:/home/ubuntu
 ~~~
 
 4\. Install **MOJO2 Python Runtime Dependencies** in EC2
 
-- 4a\. Create **model-deployment** virtual environment
+- 4a\. Download and install Anaconda.
 
 ~~~bash
-# Install Python 3.6.10
+# Download, then install Anaconda
+wget https://repo.anaconda.com/archive/Anaconda3-2020.02-Linux-x86_64.sh
+
+bash Anaconda3-2020.02-Linux-x86_64.sh
+~~~
+
+- 4b\. Create **model-deployment** virtual environment
+
+~~~bash
 conda create -y -n model-deployment python=3.6
 conda activate model-deployment
 ~~~
 
-- 4b\. Install the required packages:
+- 4c\. Install the **required packages**:
 
 ~~~bash
 # Install datable 0.10.1
@@ -147,18 +152,44 @@ pip install /home/ubuntu/daimojo-2.2.0-cp36-cp36m-linux_x86_64.whl
 export DRIVERLESS_AI_LICENSE_KEY="{license-key}"
 ~~~
 
-### Set Up MiNiFi C++ in EC2
+### Prepare Hydraulic Test Data For Mojo MiNiFi Scoring
 
-1\. Download **Driverless AI Examples** Repo for MiNiFi assets
+Make sure there is **input test data** in the directory MiNiFi will be pulling data from.
+
+1\. For **batch scoring**, you should make sure there is one or more files with multiple rows of csv data in the following directory:
 
 ~~~bash
-cd $HOME
-git clone -b mojo-py-minificpp https://github.com/james94/dai-deployment-examples/
+# go to mojo-pipeline/ directory with batch data example.csv
+cd /home/ubuntu/daimojo-minificpp/mojo-pipeline/
+
+# copy this batch data to the input dir where MiNiFi pulls the batch data
+cp example.csv /home/ubuntu/daimojo-minificpp/testData/test-batch-data/
 ~~~
 
-2\. Download **MiNiFi C++**
+2\. If you imported the MiNiFi flow for **interactive scoring**, then you should make sure there are files with a single row of csv data in the following directory:
 
-- 2a\. Install the required packages:
+~~~bash
+# go to real-time input dir where we will store real-time data
+cd /home/ubuntu/daimojo-minificpp/testData/test-real-time-data/
+
+# copy example.csv to the input dir where MiNiFi pulls the real-time data
+cp /home/ubuntu/daimojo-minificpp/mojo-pipeline/example.csv .
+
+# remove file's 1st line, the header
+echo -e "$(sed '1d' example.csv)\n" > example.csv
+
+# split file into multiple files having 1 row of data with numeric suffix and .csv extension
+split -dl 1 --additional-suffix=.csv example.csv test_
+
+# remove example.csv from real-time input dir
+rm -rf example.csv
+~~~
+
+### Set Up MiNiFi C++ in EC2
+
+1\. Download **MiNiFi C++**
+
+- 1a\. Install the required packages:
 
 ~~~bash
 # Make all packages available on EC2 instance
@@ -189,7 +220,12 @@ echo "export MINIFI_HOME=/home/ubuntu/nifi-minifi-cpp-0.7.0/" | tee -a $HOME/.pr
 source $HOME/.profile
 ~~~
 
-## Task 2: Deploy MOJO Scoring Pipeline to MiNiFi C++
+1\. Download **Driverless AI Examples** Repo for MiNiFi assets
+
+~~~bash
+cd $HOME
+git clone -b mojo-py-minificpp https://github.com/james94/dai-deployment-examples/
+~~~
 
 ### Add Custom MiNiFi Python Processors to MiNiFi in the EC2
 
@@ -210,7 +246,7 @@ mkdir -p h2o/dai/msp/
 cd h2o/
 
 # copy ConvertDsToCsv.py to current folder
-cp /home/ubuntu/dai-deployment-examples/mojo-py-minificpp/model-deployment/apps/nifi-minifi-cpp/minifi-python/h2o/ConvertDsToCsv.py .
+cp /home/ubuntu/dai-deployment-examples/mojo-py-minificpp/nifi-minifi-cpp/minifi-python/h2o/ConvertDsToCsv.py .
 ~~~
 
 3\. Copy over custom Python MOJO MiNiFi processor **ExecuteDaiMojoScoringPipeline.py** to **msp/** folder.
@@ -220,7 +256,7 @@ cp /home/ubuntu/dai-deployment-examples/mojo-py-minificpp/model-deployment/apps/
 cd dai/msp/
 
 # copy ExecuteDaiMojoScoringPipeline.py to current folder
-cp /home/ubuntu/dai-deployment-examples/mojo-py-minificpp/model-deployment/apps/nifi-minifi-cpp/minifi-python/h2o/dai/msp/ExecuteDaiMojoScoringPipeline.py .
+cp /home/ubuntu/dai-deployment-examples/mojo-py-minificpp/nifi-minifi-cpp/minifi-python/h2o/dai/msp/ExecuteDaiMojoScoringPipeline.py .
 ~~~
 
 4\. Overwrite **minifi.properties** file to tell MiNiFi where to find the new custom MiNiFi Python processors.
@@ -230,8 +266,10 @@ cp /home/ubuntu/dai-deployment-examples/mojo-py-minificpp/model-deployment/apps/
 cd /home/ubuntu/nifi-minifi-cpp-0.7.0/conf/
 
 # copy our version of minifi.properties over to conf/ to overwrite the current one
-cp /home/ubuntu/dai-deployment-examples/mojo-py-minificpp/model-deployment/apps/nifi-minifi-cpp/conf/minifi.properties .
+cp /home/ubuntu/dai-deployment-examples/mojo-py-minificpp/nifi-minifi-cpp/conf/minifi.properties .
 ~~~
+
+## Task 2: Deploy MOJO Scoring Pipeline to MiNiFi C++
 
 ### Import the MiNiFi Config Template File into MiNiFi in the EC2
 
@@ -246,48 +284,14 @@ cd /home/ubuntu/nifi-minifi-cpp-0.7.0/conf/
 
 ~~~bash
 # A: copy our minifi flow config file for batch scoring to conf/
-cp /home/ubuntu/dai-deployment-examples/mojo-py-minificpp/model-deployment/apps/nifi-minifi-cpp/conf/config-msp-batch-scoring.yml .
+cp /home/ubuntu/dai-deployment-examples/mojo-py-minificpp/nifi-minifi-cpp/conf/config-msp-batch-scoring.yml .
 # overwrite the pre-existing config.yml with our config that does batch scoring
 mv config-msp-batch-scoring.yml config.yml
 
 # B: copy our minifi flow config file for interactive scoring to conf/
-cp /home/ubuntu/dai-deployment-examples/mojo-py-minificpp/model-deployment/apps/nifi-minifi-cpp/conf/config-msp-interactive-scoring.yml .
+cp /home/ubuntu/dai-deployment-examples/mojo-py-minificpp/nifi-minifi-cpp/conf/config-msp-interactive-scoring.yml .
 # overwrite the pre-existing config.yml with our config that does interactive scoring
 mv config-msp-interactive-scoring.yml config.yml
-~~~
-
-3\. Make sure there is **input test data** in the directory MiNiFi will be pulling data from.
-
-- 3a\. If you imported the MiNiFi flow for **batch scoring**, then you should make sure there is one or more files with multiple rows of csv data in the following directory:
-
-~~~bash
-# go to mojo-pipeline/ directory with batch data example.csv
-cd /home/ubuntu/dai-mojo-minificpp/mojo-pipeline/
-
-# copy this batch data to the input dir where MiNiFi pulls the batch data
-cp example.csv /home/ubuntu/dai-mojo-minificpp/testData/test-batch-data/
-~~~
-
-- 3b\. If you imported the MiNiFi flow for **interactive scoring**, then you should make sure there are files with a single row of csv data in the following directory:
-
-~~~bash
-# go to real-time input dir where we will store real-time data
-cd /home/ubuntu/dai-mojo-minificpp/testData/test-real-time-data/
-
-# copy example.csv to the input dir where MiNiFi pulls the real-time data
-cp /home/ubuntu/dai-mojo-minificpp/mojo-pipeline/example.csv .
-
-# remove file's 1st line, the header
-echo -e "$(sed '1d' example.csv)\n" > example.csv
-
-# split example.csv into smaller real-time files each with 1 line
-split -l 1 example.csv test_
-
-# add .csv extension to all test_* files in folder
-for f in test* ; do mv "$f" "${f}.csv"; done
-
-# remove example.csv from real-time input dir
-rm -rf example.csv
 ~~~
 
 ### Start the MiNiFi Flow
@@ -311,10 +315,10 @@ cd /home/ubuntu/nifi-minifi-cpp-0.7.0/
 
 ~~~bash
 # The output directory where batch predictions are stored
-/home/ubuntu/dai-mojo-minificpp/predData/pred-batch-data
+/home/ubuntu/daimojo-minificpp/predData/pred-batch-data
 
 # The output directory where real-time predictions are stored 
-/home/ubuntu/dai-mojo-minificpp/predData/pred-real-time-data
+/home/ubuntu/daimojo-minificpp/predData/pred-real-time-data
 ~~~
 
 ### Batch Scoring

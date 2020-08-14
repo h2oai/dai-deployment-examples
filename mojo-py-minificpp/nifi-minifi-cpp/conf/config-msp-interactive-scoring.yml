@@ -14,7 +14,7 @@
 # limitations under the License.
 
 Flow Controller:
-  name: MiNiFi MOJO Py Batch Scoring Flow
+  name: MiNiFi MOJO Py Real Time Scoring Flow
 Processors:
     - name: GetFile
       class: GetFile
@@ -22,13 +22,13 @@ Processors:
       scheduling period: 120 sec
       Properties:
         Keep Source File: true
-        Input Directory: /home/ubuntu/dai-mojo-minificpp/testData/test-batch-data/
+        Input Directory: /home/ubuntu/daimojo-minificpp/testData/test-real-time-data/
 
     - name: ExecuteDaiMojoScoringPipeline
       class: ExecuteDaiMojoScoringPipeline
       Properties:
         Script File: /home/ubuntu/nifi-minifi-cpp-0.7.0/minifi-python/h2o/dai/msp/ExecuteDaiMojoScoringPipeline.py
-        MOJO Pipeline Filepath: /home/ubuntu/dai-mojo-minificpp/mojo-pipeline/pipeline.mojo
+        MOJO Pipeline Filepath: /home/ubuntu/daimojo-minificpp/mojo-pipeline/pipeline.mojo
 
     - name: ConvertDsToCsv
       class: ConvertDsToCsv
@@ -43,12 +43,12 @@ Processors:
     - name: UpdateAttribute
       class: UpdateAttribute
       Properties:
-        filename: hydraulic-batch-scores-${UUID()}.csv
+        filename: hydraulic-real-time-scores-${UUID()}.csv
 
     - name: PutFile
       class: PutFile
       Properties:
-        Directory: /home/ubuntu/dai-mojo-minificpp/predData/pred-batch-data/
+        Directory: /home/ubuntu/daimojo-minificpp/predData/pred-real-time-data/
         Conflict Resolution Strategy: replace
 
 Connections:
