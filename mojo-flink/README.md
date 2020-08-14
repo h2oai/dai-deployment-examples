@@ -39,17 +39,17 @@ chmod 400 $HOME/.ssh/{private-key-filename}.pem
 # For Mac OS X, set permanent environment variables 
 tee -a $HOME/.bash_profile << EOF
 # Set EC2 Public DNS
-export H2O_DAI_SCORING_INSTANCE={EC2 Public DNS}.compute.amazon.com
+export DAI_MOJO_FLINK_INSTANCE={EC2 Public DNS}.compute.amazon.com
 # Set EC2 Pem Key
-export H2O_DAI_SCORING_PEM=$HOME/.ssh/{private-key-filename}.pem
+export DAI_MOJO_FLINK_PEM=$HOME/.ssh/{private-key-filename}.pem
 EOF
 
 # For Linux, set permanent environment variables
 tee -a $HOME/.profile << EOF
 # Set EC2 Public DNS
-export H2O_DAI_SCORING_INSTANCE={EC2 Public DNS}.compute.amazon.com
+export DAI_MOJO_FLINK_INSTANCE={EC2 Public DNS}.compute.amazon.com
 # Set EC2 Pem Key
-export H2O_DAI_SCORING_PEM=$HOME/.ssh/{private-key-filename}.pem
+export DAI_MOJO_FLINK_PEM=$HOME/.ssh/{private-key-filename}.pem
 EOF
 
 source $HOME/.bash_profile
@@ -59,7 +59,7 @@ source $HOME/.bash_profile
 
 ~~~bash
 # Connect to EC2 instance using SSH
-ssh -i $H2O_DAI_SCORING_PEM ubuntu@$H2O_DAI_SCORING_INSTANCE
+ssh -i $DAI_MOJO_FLINK_PEM ubuntu@$DAI_MOJO_FLINK_INSTANCE
 ~~~
 
 ### Create Environment Directory Structure
@@ -99,14 +99,14 @@ https://raw.githubusercontent.com/james94/driverlessai-recipes/master/data/hydra
 
 ~~~bash
 # Move Driverless AI MOJO Scoring Pipeline to EC2 instance
-scp -i $H2O_DAI_SCORING_PEM $HOME/Downloads/mojo.zip ubuntu@$H2O_DAI_SCORING_INSTANCE:/home/ubuntu/daimojo-flink/
+scp -i $DAI_MOJO_FLINK_PEM $HOME/Downloads/mojo.zip ubuntu@$DAI_MOJO_FLINK_INSTANCE:/home/ubuntu/daimojo-flink/
 ~~~
 
 - 2b. Unzip **mojo.zip**.
 
 ~~~bash
 sudo apt -y install unzip
-cd /home/ubuntu/daimojo-flink/
+cd $HOME/daimojo-flink/
 unzip mojo.zip
 ~~~
 
@@ -125,7 +125,6 @@ bash Anaconda3-2020.02-Linux-x86_64.sh
 - 3b. Create **model-deployment** virtual environment and install the **required packages**
 
 ~~~bash
-# Install Python 3.6.10
 conda create -y -n model-deployment python=3.6
 conda activate model-deployment
 
@@ -141,6 +140,39 @@ conda install -y -c conda-forge maven
 ~~~bash
 # Set Driverless AI License Key
 export DRIVERLESS_AI_LICENSE_KEY="{license-key}"
+~~~
+
+### Prepare Hydraulic Test Data For Mojo Flink Scoring
+
+Make sure there is **input test data** in the input directory Flink will be pulling data from.
+
+1\. For **batch scoring**, you should make sure there is one or more files with multiple rows of csv data in the following directory:
+
+~~~bash
+# go to mojo-pipeline/ directory with batch data example.csv
+cd $HOME/daimojo-flink/mojo-pipeline/
+
+# copy this batch data to the input dir where Flink pulls the batch data
+cp example.csv $HOME/daimojo-flink/testData/test-batch-data/
+~~~
+
+2\. For **real-time scoring**, you should make sure there are files with a single row of csv data in the following directory:
+
+~~~bash
+# go to real-time input dir where we will store real-time data
+cd $HOME/daimojo-flink/testData/test-real-time-data/
+
+# copy example.csv to the input dir where Flink pulls the real-time data
+cp $HOME/daimojo-flink/mojo-pipeline/example.csv .
+
+# remove file's 1st line, the header
+echo -e "$(sed '1d' example.csv)\n" > example.csv
+
+# split file into multiple files having 1 row of data with numeric suffix and .csv extension
+split -dl 1 --additional-suffix=.csv example.csv test_
+
+# remove example.csv from real-time input dir
+rm -rf example.csv
 ~~~
 
 ### Set Up Flink Local Cluster in EC2
@@ -171,39 +203,6 @@ cd $HOME/flink-1.11.1
 3\. Access the Flink UI: http://localhost:8081/#/overview
 
 ![Flink UI Overview](./images/flink-ui-overview.jpg)
-
-### Prepare Hydraulic Test Data For Mojo Flink Scoring
-
-Make sure there is **input test data** in the input directory Flink will be pulling data from.
-
-1\. For **batch scoring**, you should make sure there is one or more files with multiple rows of csv data in the following directory:
-
-~~~bash
-# go to mojo-pipeline/ directory with batch data example.csv
-cd $HOME/daimojo-flink/mojo-pipeline/
-
-# copy this batch data to the input dir where Flink pulls the batch data
-cp example.csv $HOME/daimojo-flink/testData/test-batch-data/
-~~~
-
-2\. For real-time scoring, you should make sure there are files with a single row of csv data in the following directory:
-
-~~~bash
-# go to real-time input dir where we will store real-time data
-cd $HOME/daimojo-flink/testData/test-real-time-data/
-
-# copy example.csv to the input dir where Flink pulls the real-time data
-cp $HOME/daimojo-flink/mojo-pipeline/example.csv .
-
-# remove file's 1st line, the header
-echo -e "$(sed '1d' example.csv)\n" > example.csv
-
-# on linux, split file into multiple files having 1 row of data with numeric suffix and .csv extension
-split -dl 1 --additional-suffix=.csv example.csv test_
-
-# remove example.csv from real-time input dir
-rm -rf example.csv
-~~~
 
 ### Compile Flink MOJO ML Data Pipeline Jobs
 
