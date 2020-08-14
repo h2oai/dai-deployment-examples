@@ -10,7 +10,7 @@ The following link is a YouTube video that shows how to deploy the Driverless AI
 
 ## Prerequisites
 
-- Driverless AI Environment
+- Driverless AI Environment (Tested with Driverless AI 1.8.7.1, MOJO Scoring Pipeline 2.4.2)
 
 - Launch Ubuntu 18.04 Linux EC2 instance
     - Instance Type: t2.2xlarge
@@ -30,10 +30,7 @@ git clone -b mojo-nifi https://github.com/james94/dai-deployment-examples/
 1\. Move the EC2 Pivate Key File (Pem Key) to the .ssh folder
 
 ~~~bash
-# Move Private Key to .ssh folder
 mv $HOME/Downloads/{private-key-filename}.pem $HOME/.ssh/
-
-# Set Private Key permissions to 400 to avoid SSH permission denied
 chmod 400 $HOME/.ssh/{private-key-filename}.pem
 ~~~
 
@@ -43,17 +40,17 @@ chmod 400 $HOME/.ssh/{private-key-filename}.pem
 # For Mac OS X, set permanent environment variables 
 tee -a $HOME/.bash_profile << EOF
 # Set EC2 Public DNS
-export H2O_DAI_SCORING_INSTANCE={EC2 Public DNS}.compute.amazon.com
+export DAI_MOJO_NIFI_INSTANCE={EC2 Public DNS}.compute.amazon.com
 # Set EC2 Pem Key
-export H2O_DAI_SCORING_PEM=$HOME/.ssh/{private-key-filename}.pem
+export DAI_MOJO_NIFI_PEM=$HOME/.ssh/{private-key-filename}.pem
 EOF
 
 # For Linux, set permanent environment variables
 tee -a $HOME/.profile << EOF
 # Set EC2 Public DNS
-export H2O_DAI_SCORING_INSTANCE={EC2 Public DNS}.compute.amazon.com
+export DAI_MOJO_NIFI_INSTANCE={EC2 Public DNS}.compute.amazon.com
 # Set EC2 Pem Key
-export H2O_DAI_SCORING_PEM=$HOME/.ssh/{private-key-filename}.pem
+export DAI_MOJO_NIFI_PEM=$HOME/.ssh/{private-key-filename}.pem
 EOF
 
 source $HOME/.bash_profile
@@ -62,8 +59,7 @@ source $HOME/.bash_profile
 3\. Connect to EC2 via SSH
 
 ~~~bash
-# Connect to EC2 instance using SSH
-ssh -i $H2O_DAI_SCORING_PEM ubuntu@$H2O_DAI_SCORING_INSTANCE
+ssh -i $DAI_MOJO_NIFI_PEM ubuntu@$DAI_MOJO_NIFI_INSTANCE
 ~~~
 
 ### Create Environment Directory Structure
@@ -72,12 +68,9 @@ ssh -i $H2O_DAI_SCORING_PEM ubuntu@$H2O_DAI_SCORING_INSTANCE
 
 ~~~bash
 # Create directory structure for DAI MOJO NiFi Projects
+mkdir $HOME/daimojo-nifi/
 
-# Create directory where the mojo-pipeline/ folder will be stored
-mkdir /home/ubuntu/dai-mojo-nifi/
-
-# Create input directory used for batch scoring or real-time scoring
-mkdir -p /home/ubuntu/dai-mojo-nifi/testData/{test-batch-data,test-real-time-data}
+mkdir -p $HOME/daimojo-nifi/testData/{test-batch-data,test-real-time-data}
 ~~~
 
 ### Set Up Driverless AI MOJO Scoring Pipeline in EC2
@@ -103,14 +96,14 @@ https://raw.githubusercontent.com/james94/driverlessai-recipes/master/data/hydra
 
 ~~~bash
 # Move Driverless AI MOJO Scoring Pipeline to EC2 instance
-scp -i $H2O_DAI_SCORING_PEM $HOME/Downloads/mojo.zip ubuntu@$H2O_DAI_SCORING_INSTANCE:/home/ubuntu/dai-mojo-nifi/
+scp -i $DAI_MOJO_NIFI_PEM $HOME/Downloads/mojo.zip ubuntu@$DAI_MOJO_NIFI_INSTANCE:/home/ubuntu/daimojo-nifi/
 ~~~
 
 - 2b\. Unzip **mojo.zip**.
 
 ~~~bash
 sudo apt -y install unzip
-cd /home/ubuntu/dai-mojo-nifi/
+cd $HOME/daimojo-nifi/
 unzip mojo.zip
 ~~~
 
@@ -119,17 +112,15 @@ unzip mojo.zip
 - 3a\. Download and install Anaconda.
 
 ~~~bash
-# Download Anaconda
+# Download, then install Anaconda
 wget https://repo.anaconda.com/archive/Anaconda3-2020.02-Linux-x86_64.sh
 
-# Install Anaconda
 bash Anaconda3-2020.02-Linux-x86_64.sh
 ~~~
 
 - 3b\. Create **model-deployment** virtual environment
 
 ~~~bash
-# Install Python 3.6.10
 conda create -y -n model-deployment python=3.6
 conda activate model-deployment
 ~~~
@@ -151,16 +142,42 @@ conda install -y -c conda-forge maven
 export DRIVERLESS_AI_LICENSE_KEY="{license-key}"
 ~~~
 
-### Set Up NiFi in EC2
+### Prepare Hydraulic Test Data For Mojo NiFi Scoring
 
-1\. Download **Driverless AI Deployment Examples** Repo for NiFi assets
+Make sure there is **input test data** in the input directory NiFi will be pulling data from.
+
+1\. For **batch scoring**, you should make sure there is one or more files with multiple rows of csv data in the following directory:
 
 ~~~bash
-cd $HOME
-git clone -b mojo-nifi https://github.com/james94/dai-deployment-examples/
+# go to mojo-pipeline/ directory with batch data example.csv
+cd $HOME/daimojo-nifi/mojo-pipeline/
+
+# copy this batch data to the input dir where NiFi pulls the batch data
+cp example.csv $HOME/daimojo-nifi/testData/test-batch-data/
 ~~~
 
-2\. Download **NiFi**
+2\. For **real-time scoring**, you should make sure there are files with a single row of csv data in the following directory:
+
+~~~bash
+# go to real-time input dir where we will store real-time data
+cd $HOME/daimojo-nifi/testData/test-real-time-data/
+
+# copy example.csv to the input dir where NiFi pulls the real-time data
+cp $HOME/daimojo-nifi/mojo-pipeline/example.csv .
+
+# remove file's 1st line, the header
+echo -e "$(sed '1d' example.csv)\n" > example.csv
+
+# split file into multiple files having 1 row of data with numeric suffix and .csv extension
+split -dl 1 --additional-suffix=.csv example.csv test_
+
+# remove example.csv from real-time input dir
+rm -rf example.csv
+~~~
+
+### Set Up NiFi in EC2
+
+1\. Download **NiFi**
 
 ~~~bash
 cd $HOME
@@ -170,61 +187,31 @@ wget https://downloads.apache.org/nifi/1.11.4/nifi-1.11.4-bin.tar.gz
 tar -xvf nifi-1.11.4-bin.tar.gz
 ~~~
 
-3\. Make sure there is **input test data** in the input directory NiFi will be pulling data from.
+### Compile Custom MOJO NiFi Processor
 
-- 3a\. For **batch scoring**, you should make sure there is one or more files with multiple rows of csv data in the following directory:
-
-~~~bash
-# go to mojo-pipeline/ directory with batch data example.csv
-cd /home/ubuntu/dai-mojo-nifi/mojo-pipeline/
-
-# copy this batch data to the input dir where NiFi pulls the batch data
-cp example.csv /home/ubuntu/dai-mojo-nifi/testData/test-batch-data/
-~~~
-
-- 3b\. For **interactive scoring**, you should make sure there are files with a single row of csv data in the following directory:
+1\. Download **Driverless AI Deployment Examples** Repo for **NiFi** assets
 
 ~~~bash
-# go to real-time input dir where we will store real-time data
-cd /home/ubuntu/dai-mojo-nifi/testData/test-real-time-data/
-
-# copy example.csv to the input dir where NiFi pulls the real-time data
-cp /home/ubuntu/dai-mojo-nifi/mojo-pipeline/example.csv .
-
-# remove file's 1st line, the header
-echo -e "$(sed '1d' example.csv)\n" > example.csv
-
-# split example.csv into smaller real-time files each with 1 line
-split -l 1 example.csv test_
-
-# add .csv extension to all test_* files in folder
-for f in test* ; do mv "$f" "${f}.csv"; done
-
-# remove example.csv from real-time input dir
-rm -rf example.csv
+cd $HOME
+git clone -b mojo-nifi https://github.com/james94/dai-deployment-examples/
 ~~~
 
-## Task 2: Deploy MOJO Scoring Pipeline to NiFi
-
-### Compile Custom MOJO NiFi Processor in EC2
-
-1\. Compile the Java code for the NiFi processor into a **NAR package**:
+2\. Compile the Java code for the NiFi processor into a **NAR package**:
 
 ~~~bash
-cd $HOME/dai-deployment-examples/mojo-nifi/model-deployment/apps/nifi/nifi-nar-bundles/nifi-h2o-record-bundle/
-mvn install
+cd $HOME/dai-deployment-examples/mojo-nifi/nifi-nar-bundles/nifi-daimojo-record-bundle/
+mvn clean install
 ~~~
 
-### Add Custom NiFi Processor to NiFi in EC2
+### Add Custom NiFi Processor to NiFi
 
 1\. Copy over the NiFi NAR file **nifi-h2o-record-nar-1.11.4.nar**, which contains the Java MOJO NiFi processor to the NiFi **lib/** folder:
 
 ~~~bash
-# go into nifi lib/ folder
 cd $HOME/nifi-1.11.4/lib/
 
 # copy nifi h2o nar to current folder
-cp $HOME/dai-deployment-examples/mojo-nifi/model-deployment/apps/nifi/nifi-nar-bundles/nifi-h2o-record-bundle/nifi-h2o-record-nar/target/nifi-h2o-record-nar-1.11.4.nar .
+cp $HOME/dai-deployment-examples/mojo-nifi/nifi-nar-bundles/nifi-daimojo-record-bundle/nifi-daimojo-record-nar/target/nifi-daimojo-record-nar-1.11.4.nar .
 ~~~
 
 ### Start the NiFi Server in EC2
@@ -232,8 +219,7 @@ cp $HOME/dai-deployment-examples/mojo-nifi/model-deployment/apps/nifi/nifi-nar-b
 1\. Start the NiFi server where we import NiFi data flows to do batch scoring or real-time scoring
 
 ~~~bash
-# go back to nifi base folder
-cd ../
+cd $HOME/nifi-1.11.4/
 
 # start nifi server
 ./bin/nifi.sh start
@@ -244,7 +230,7 @@ cd ../
 
 2\. Access the NiFi UI: http://localhost:8080/nifi/
 
-> **Note**: It may take a few minutes for the NiFi server to load the NiFi UI application.
+## Task 2: Deploy MOJO Scoring Pipeline to NiFi
 
 ### Import the NiFi Data Flow Template into NiFi in EC2
 
@@ -256,10 +242,10 @@ cd ../
 
 ~~~bash
 # NiFi Data Flow Template executes MOJO for batch scoring
-$HOME/dai-deployment-examples/mojo-nifi/model-deployment/apps/nifi/templates/predBatchesHydCoolCond.xml
+$HOME/dai-deployment-examples/mojo-nifi/nifi-dataflow-templates/BatchPredHydCoolCond.xml
 
 # NiFi Data Flow Template executes MOJO for real-time scoring
-$HOME/dai-deployment-examples/mojo-nifi/model-deployment/apps/nifi/templates/predRealTimeHydCoolCond.xml
+$HOME/dai-deployment-examples/mojo-nifi/nifi-dataflow-templates/RealTimePredHydCoolCond.xml
 ~~~
 
 3\. Drag and drop the NiFi template component onto the NiFi canvas.
@@ -268,12 +254,12 @@ $HOME/dai-deployment-examples/mojo-nifi/model-deployment/apps/nifi/templates/pre
 
 4\. Select the NiFi Data Flow template you just uploaded. 
 
-- If you uploaded **predBatchesHydCoolCond** template, then select it. 
-- Else if you uploaded **predRealTimeHydCoolCond** template, then select it.
+- If you uploaded **BatchPredHydCoolCond** template, then select it. 
+- Else if you uploaded **RealTimePredHydCoolCond** template, then select it.
 
 ### Start the NiFi Data Flow
 
-Start the NiFi Flow to do **batch scoring** or **interactive (real-time) scoring**
+Start the NiFi Flow to do **batch scoring** or **real-time scoring**
 
 1\. In the Operate Panel, click the **start button** to run the NiFi Flow. 
 
@@ -285,7 +271,7 @@ You should see all processors red stop icon change to a green play icon in their
 
 ### Batch Scoring
 
-If you uploaded the **predBatchesHydCoolCond** flow template, ran the flow and then stopped it, you should see the following NiFi Flow:
+If you uploaded the **BatchPredHydCoolCond** flow template, ran the flow and then stopped it, you should see the following NiFi Flow:
 
 ![nifi-flow-run-mojo-batch-scores](images/nifi-flow-run-mojo-batch-scores.jpg)
 
@@ -293,15 +279,15 @@ Here we look at a provenance event from PutFile processor for when NiFi executed
 
 1\. Right click on the PutFile processor, choose Data Provenance.
 
-2\. Choose the first event in the list and click on the i on the left corner of the first row.
+2\. Choose the first event in the list and click on the **i** on the left corner of the first row.
 
-3\. A provenance event window should appear, then in the output side of the window, click on view to see the batch scoring data.
+3\. A provenance event window should appear, then in the output side of the window, click on view to see the batch scores.
 
 ![nifi-flow-batch-scores](images/nifi-flow-batch-scores.jpg)
 
 ### Interactive Scoring
 
-If you uploaded the **predRealTimeHydCoolCond** flow template, ran the flow and then stopped it, you should see the following NiFi Flow:
+If you uploaded the **RealTimePredHydCoolCond** flow template, ran the flow and then stopped it, you should see the following NiFi Flow:
 
 ![nifi-flow-run-mojo-scores](images/nifi-flow-run-mojo-interactive-scores.jpg)
 
