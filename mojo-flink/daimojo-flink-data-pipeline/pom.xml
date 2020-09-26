@@ -4,20 +4,20 @@
 
 	<groupId>daimojo-flink-data-pipeline</groupId>
 	<artifactId>daimojo-flink-data-pipeline</artifactId>
-	<version>1.11.1</version>
+	<version>1.10.0</version>
 	<packaging>jar</packaging>
 
 	<name>Driverless AI MOJO Flink Job</name>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<flink.version>1.11.1</flink.version>
+		<flink.version>1.10.0</flink.version>
 		<java.version>1.8</java.version>
 		<scala.binary.version>2.12</scala.binary.version>
 		<maven.compiler.source>${java.version}</maven.compiler.source>
 		<maven.compiler.target>${java.version}</maven.compiler.target>
 		<log4j.version>2.12.1</log4j.version>
-		<daimojo.version>2.4.2</daimojo.version>
+		<daimojo.version>2.4.8</daimojo.version>
 	</properties>
 
 	<repositories>
@@ -55,8 +55,13 @@
 			<version>${flink.version}</version>
 			<scope>provided</scope>
 		</dependency>
+		<!-- Kafka connector for Flink 1.10.0 -->
+		<dependency>
+		  <groupId>org.apache.flink</groupId>
+		  <artifactId>flink-connector-kafka_${scala.binary.version}</artifactId>
+		  <version>${flink.version}</version>
+		</dependency>
 		<!-- Add logging framework, to produce console output when running in the IDE. -->
-		<!-- These dependencies are excluded from the application JAR by default. -->
 		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>
 			<artifactId>log4j-slf4j-impl</artifactId>
@@ -78,7 +83,7 @@
 		    <artifactId>opencsv</artifactId>
 		    <version>[5.2]</version>
 		</dependency>
-		<!-- Driverless AI v1.8.7.1 MOJO Scoring Pipeline v2.4.2 dependencies -->
+		<!-- Driverless AI v1.9.0 MOJO Scoring Pipeline v2.4.8 dependencies -->
 		<!-- https://mvnrepository.com/artifact/ai.h2o/mojo2-runtime-api -->
   		<dependency>
 			<groupId>ai.h2o</groupId>
@@ -90,7 +95,7 @@
 		    <groupId>ai.h2o</groupId>
 		    <artifactId>mojo2-runtime-impl</artifactId>
 		    <version>${daimojo.version}</version>
-		</dependency>				
+		</dependency>
 	</dependencies>
 
 	<build>
@@ -126,7 +131,6 @@
 									<exclude>org.apache.flink:force-shading</exclude>
 									<exclude>com.google.code.findbugs:jsr305</exclude>
 									<exclude>org.slf4j:*</exclude>
-									<exclude>org.apache.logging.log4j:*</exclude>
 								</excludes>
 							</artifactSet>
 							<filters>
