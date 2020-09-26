@@ -26,11 +26,11 @@ public class RealTimePredHydCoolCond {
 	public static void main(String[] args) throws IOException, LicenseException, JobExecutionException {
 		final StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
 		
-		File pathToDaiMojo = new File(homePath + "/daimojo-flink/mojo-pipeline/pipeline.mojo");
+		File pathToDaiMojo = new File(homePath + "/dai-model-deployment/mojo-pipeline/pipeline.mojo");
 		
 		DataStream<String> hydPredHeader = getPredHeader(pathToDaiMojo, env, "Get Pred Header via DAI MOJO");
 		
-		String pathToHydraulicData = homePath + "/daimojo-flink/testData/test-real-time-data/";
+		String pathToHydraulicData = homePath + "/dai-model-deployment/testData/test-real-time-data/";
 		DataStream<String>hydraulic = getRealTimeData(env, pathToHydraulicData, "Get Real-Time Data");
 		
 		DataStream<String> predHydraulic = predictRealTimeData(hydraulic, pathToDaiMojo, "Run DAI Mojo Real-Time Scoring");
