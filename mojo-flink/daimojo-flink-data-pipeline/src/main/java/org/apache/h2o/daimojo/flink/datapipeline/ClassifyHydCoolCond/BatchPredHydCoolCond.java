@@ -29,11 +29,11 @@ public class BatchPredHydCoolCond {
 	public static void main(String[] args) throws IOException, LicenseException, JobExecutionException {
 		final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
 		
-		File pathToDaiMojo = new File(homePath + "/daimojo-flink/mojo-pipeline/pipeline.mojo");
+		File pathToDaiMojo = new File(homePath + "/dai-model-deployment/mojo-pipeline/pipeline.mojo");
 		
 		DataSet<String> hydPredHeader = getPredHeader(pathToDaiMojo, env, "Get Pred Header via DAI MOJO");
 		
-		String pathToHydraulicData = homePath + "/daimojo-flink/testData/test-batch-data/example.csv";
+		String pathToHydraulicData = homePath + "/dai-model-deployment/testData/test-batch-data/example.csv";
 		DataSet<String> hydraulic = getBatchData(env, pathToHydraulicData, "Get Batch Data");
 		
 		DataSet<String> hydHeadFiltered = filterOutHeader(true, hydraulic, "Filter Out Input Header");
