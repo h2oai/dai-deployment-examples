@@ -1,31 +1,5 @@
 #!/usr/bin/env python
-# Licensed to the Apache Software Foundation (ASF) under one or more
-# contributor license agreements.  See the NOTICE file distributed with
-# this work for additional information regarding copyright ownership.
-# The ASF licenses this file to You under the Apache License, Version 2.0
-# (the "License"); you may not use this file except in compliance with
-# the License.  You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-"""
-    Install the following with pip
 
-    -- after downloading the python scoring pipeline from Driverless AI,
-       the following was needed for executing the Scorer to make predictions
-    pip install -r requirements.txt
-
-        This requirements.txt file includes pip packages that are available on
-        the internet for install, but there are some packages that only come with
-        the python scoring pipeline download, which include:
-    h2oaicore-1.8.4.1-cp36-cp36m-linux_x86_64.whl
-    scoring_h2oai_experiment_6a77d0a4_6a25_11ea_becf_0242ac110002-1.0.0-py3-none-any.whl
-"""
 import os
 import sys
 import codecs
