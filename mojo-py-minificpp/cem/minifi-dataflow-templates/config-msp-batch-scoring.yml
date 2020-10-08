@@ -1,0 +1,61 @@
+Flow Controller:
+  name: MiNiFi MOJO Py Batch Scoring Flow
+Processors:
+    - name: GetFile
+      class: GetFile
+      scheduling strategy: TIMER_DRIVEN
+      scheduling period: 120 sec
+      Properties:
+        Keep Source File: true
+        Input Directory: /home/ubuntu/daimojo-minificpp/testData/test-batch-data/
+
+    - name: ExecuteDaiMojoScoringPipeline
+      class: ExecuteDaiMojoScoringPipeline
+      Properties:
+        Script File: /home/ubuntu/nifi-minifi-cpp-0.7.0/minifi-python/h2o/dai/msp/ExecuteDaiMojoScoringPipeline.py
+        MOJO Pipeline Filepath: /home/ubuntu/daimojo-minificpp/mojo-pipeline/pipeline.mojo
+
+    - name: ConvertDsToCsv
+      class: ConvertDsToCsv
+      Properties:
+        Script File: /home/ubuntu/nifi-minifi-cpp-0.7.0/minifi-python/h2o/ConvertDsToCsv.py
+      
+    - name: LogAttribute
+      class: LogAttribute
+      Properties:
+        Log Level: info
+
+    - name: UpdateAttribute
+      class: UpdateAttribute
+      Properties:
+        filename: hydraulic-batch-scores-${UUID()}.csv
+
+    - name: PutFile
+      class: PutFile
+      Properties:
+        Directory: /home/ubuntu/daimojo-minificpp/predData/pred-batch-data/
+        Conflict Resolution Strategy: replace
+
+Connections:
+    - source name: GetFile
+      source relationship name: success
+      destination name: ExecuteDaiMojoScoringPipeline
+
+    - source name: ExecuteDaiMojoScoringPipeline
+      source relationship name: success
+      destination name: ConvertDsToCsv
+
+    - source name: ConvertDsToCsv
+      source relationship name: success
+      destination name: LogAttribute
+
+    - source name: ConvertDsToCsv
+      source relationship name: success
+      destination name: UpdateAttribute
+
+    - source name: UpdateAttribute
+      source relationship name: success
+      destination name: PutFile
+
+Remote Processing Groups: []
+Provenance Reporting:

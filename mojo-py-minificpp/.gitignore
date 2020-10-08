@@ -1,0 +1,60 @@
+# Standard ignores
+.DS_Store
+
+# Ignore JetBrains project files
+.idea
+# Ignore intellij project files
+
+.iml
+# Ignore JetBrains cLion project files.
+.project
+
+# Ignore kdevelop metadata
+nifi-minifi-cpp.kdev4
+.kdev4
+
+.device_id
+
+# Filter out generated files from the included libuuid
+thirdparty/uuid/tst_uuid*
+assemblies
+CMakeCache.txt
+CMakeFiles
+CMakeScripts
+cmake_install.cmake
+install_manifest.txt
+CTestTestfile.cmake
+cmake-build-debug
+
+# Generated files
+flowfile_checkpoint
+build
+bt_state
+bin
+target
+thirdparty/**/*.o
+thirdparty/**/*.a
+libminifi/test/**/*.a
+libminifi/include/agent/agent_version.h
+docs/generated
+thirdparty/apache-rat/apache-rat*
+/compile_commands.json
+
+# Ignore source files that have been placed in the docker directory during build
+docker/minificppsource
+docker/xenial/minificppsource
+docker/bionic/minificppsource
+docker/debian/minificppsource
+docker/centos/minificppsource
+docker/fedora/minificppsource
+.vs/**
+*.swp
+.cache
+.cproject
+.settings
+*.pyc
+/cmake-build-*
+.vs/VSWorkspaceState.json
+.vs/slnx.sqlite
+/.ccls-cache
+/.vscode
