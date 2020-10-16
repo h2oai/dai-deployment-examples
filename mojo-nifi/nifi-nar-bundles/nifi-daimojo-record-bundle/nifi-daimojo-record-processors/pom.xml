@@ -10,7 +10,7 @@
 
     <properties>
             <nifi.version>1.11.4</nifi.version>
-            <daimojo.version>2.4.2</daimojo.version>
+            <daimojo.version>2.4.8</daimojo.version>
     </properties>
 
     <artifactId>nifi-daimojo-record-processors</artifactId>
@@ -70,7 +70,7 @@
             <artifactId>junit</artifactId>
             <scope>test</scope>
         </dependency>
-		<!-- Driverless AI v1.8.7.1 MOJO Scoring Pipeline v2.4.2 dependencies -->
+		<!-- Driverless AI v1.9.0 MOJO Scoring Pipeline v2.4.8 dependencies -->
 		<!-- https://mvnrepository.com/artifact/ai.h2o/mojo2-runtime-api -->
   		<dependency>
 			<groupId>ai.h2o</groupId>
