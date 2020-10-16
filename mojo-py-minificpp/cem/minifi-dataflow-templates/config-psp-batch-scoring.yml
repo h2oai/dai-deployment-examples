@@ -1,0 +1,60 @@
+Flow Controller:
+  name: MiNiFi Py Batch Scoring Flow
+Processors:
+    - name: GetFile
+      class: GetFile
+      scheduling strategy: TIMER_DRIVEN
+      scheduling period: 120 sec
+      Properties:
+        Keep Source File: true
+        Input Directory: /home/ubuntu/dai-psp-minificpp/testData/test-batch-data/
+  
+    - name: ExecuteDaiPspBatchScoring
+      class: ExecuteDaiPspBatchScoring
+      Properties:
+        Script File: /home/ubuntu/nifi-minifi-cpp-0.7.0/minifi-python/h2o/dai/psp/ExecuteDaiPspBatchScoring.py
+
+    - name: ConvertDsToCsv
+      class: ConvertDsToCsv
+      Properties:
+        Script File: /home/ubuntu/nifi-minifi-cpp-0.7.0/minifi-python/h2o/ConvertDsToCsv.py
+      
+    - name: LogAttribute
+      class: LogAttribute
+      Properties:
+        Log Level: info
+
+    - name: UpdateAttribute
+      class: UpdateAttribute
+      Properties:
+        filename: hydraulic-batch-scores-${UUID()}.csv
+
+    - name: PutFile
+      class: PutFile
+      Properties:
+        Directory: /home/ubuntu/dai-psp-minificpp/predData/pred-batch-data/
+        Conflict Resolution Strategy: replace
+
+Connections:
+    - source name: GetFile
+      source relationship name: success
+      destination name: ExecuteDaiPspBatchScoring
+
+    - source name: ExecuteDaiPspBatchScoring
+      source relationship name: success
+      destination name: ConvertDsToCsv
+
+    - source name: ConvertDsToCsv
+      source relationship name: success
+      destination name: LogAttribute
+
+    - source name: ConvertDsToCsv
+      source relationship name: success
+      destination name: UpdateAttribute
+
+    - source name: UpdateAttribute
+      source relationship name: success
+      destination name: PutFile
+
+Remote Processing Groups: []
+Provenance Reporting:

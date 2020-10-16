@@ -1,0 +1,61 @@
+Flow Controller:
+  name: MiNiFi Py Real Time Scoring Flow
+Processors:
+    - name: GetFile
+      class: GetFile
+      scheduling strategy: TIMER_DRIVEN
+      scheduling period: 120 sec
+      Properties:
+        Keep Source File: true
+        Input Directory: /home/ubuntu/dai-psp-minificpp/testData/test-real-time-data/
+
+    - name: ExecuteDaiPspRealTimeScoring
+      class: ExecuteDaiPspRealTimeScoring
+      Properties:
+        Script File: /home/ubuntu/nifi-minifi-cpp-0.7.0/minifi-python/h2o/dai/psp/ExecuteDaiPspRealTimeScoring.py
+        Predicted Label(s): cool_cond_y.3,cool_cond_y.100,cool_cond_y.20
+
+    - name: ConvertDsToCsv
+      class: ConvertDsToCsv
+      Properties:
+        Script File: /home/ubuntu/nifi-minifi-cpp-0.7.0/minifi-python/h2o/ConvertDsToCsv.py
+      
+    - name: LogAttribute
+      class: LogAttribute
+      Properties:
+        Log Level: info
+
+    - name: UpdateAttribute
+      class: UpdateAttribute
+      Properties:
+        filename: hydraulic-real-time-scores-${UUID()}.csv
+
+    - name: PutFile
+      class: PutFile
+      Properties:
+        Directory: /home/ubuntu/dai-psp-minificpp/predData/pred-real-time-data/
+        Conflict Resolution Strategy: replace
+
+Connections:
+    - source name: GetFile
+      source relationship name: success
+      destination name: ExecuteDaiPspRealTimeScoring
+
+    - source name: ExecuteDaiPspRealTimeScoring
+      source relationship name: success
+      destination name: ConvertDsToCsv
+
+    - source name: ConvertDsToCsv
+      source relationship name: success
+      destination name: LogAttribute
+
+    - source name: ConvertDsToCsv
+      source relationship name: success
+      destination name: UpdateAttribute
+
+    - source name: UpdateAttribute
+      source relationship name: success
+      destination name: PutFile
+
+Remote Processing Groups: []
+Provenance Reporting:
