@@ -32,5 +32,8 @@ deployment templates.
       - [EC2 Ubuntu HTTP Server](./python-scoring-pipeline/http_ec2_ubuntu.md)
 - [Flink Custom RichMapFunction for Running the MOJO in Flink Data Pipeline](./mojo-flink)
    - This example will walk through how to use a Flink custom RichMapFunction to execute the MOJO Scoring Pipeline within a Flink Data Pipeline to do batch scoring and real-time scoring.
+- [Deploy Driverless AI MOJO Scoring Pipeline within a NiFi Data Flow](./mojo-nifi)
+   - This example will walk through how to use a NiFi custom processor to execute the MOJO Scoring Pipeline within a NiFi Data Flow to do batch scoring and real-time scoring.
 - [Deploy Driverless AI MOJO Scoring Pipeline in a MiNiFi C++ Data Flow with CEM](./mojo-py-minificpp)
    - This example will walk through how to install Cloudera Edge Management, which includes Edge Flow Manager, NiFi Registry and one MiNiFi C++ Agent and Driverless AI MOJO2 Python Runtime on an EC2 instance. It will then go through how to use EFM to build a data flow with Driverless AI MOJO Scoring Pipeline for a MiNiFi C++ Agent and publish that data flow to that agent. With Cloudera Ege Management and Driverless AI MOJO Scoring Pipeline integration, pushing ML models to an edge device is much easier.
+

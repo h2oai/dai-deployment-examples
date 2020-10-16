@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.apache.nifi</groupId>
+        <artifactId>nifi-daimojo-record-bundle</artifactId>
+        <version>1.11.4</version>
+    </parent>
+
+    <properties>
+            <nifi.version>1.11.4</nifi.version>
+            <daimojo.version>2.4.8</daimojo.version>
+    </properties>
+
+    <artifactId>nifi-daimojo-record-processors</artifactId>
+    <packaging>jar</packaging>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.nifi</groupId>
+            <artifactId>nifi-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.nifi</groupId>
+            <artifactId>nifi-utils</artifactId>
+            <version>${nifi.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.nifi</groupId>
+            <artifactId>nifi-record</artifactId>
+            <version>${nifi.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.nifi</groupId>
+            <artifactId>nifi-record-serialization-service-api</artifactId>
+            <version>${nifi.version}</version>
+        </dependency>        
+        <dependency>
+            <groupId>org.apache.nifi</groupId>
+            <artifactId>nifi-mock</artifactId>
+            <version>${nifi.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.nifi</groupId>
+            <artifactId>nifi-mock-record-utils</artifactId>
+            <version>${nifi.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.nifi</groupId>
+            <artifactId>nifi-record-serialization-services</artifactId>
+            <version>${nifi.version}</version>
+            <scope>test</scope>
+        </dependency>   
+        <dependency>
+            <groupId>org.apache.nifi</groupId>
+            <artifactId>nifi-schema-registry-service-api</artifactId>
+            <version>${nifi.version}</version>
+            <scope>test</scope>
+        </dependency>                     
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+		<!-- Driverless AI v1.9.0 MOJO Scoring Pipeline v2.4.8 dependencies -->
+		<!-- https://mvnrepository.com/artifact/ai.h2o/mojo2-runtime-api -->
+  		<dependency>
+			<groupId>ai.h2o</groupId>
+			<artifactId>mojo2-runtime-api</artifactId>
+			<version>${daimojo.version}</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/ai.h2o/mojo2-runtime-impl -->
+ 		<dependency>
+		    <groupId>ai.h2o</groupId>
+		    <artifactId>mojo2-runtime-impl</artifactId>
+		    <version>${daimojo.version}</version>
+		</dependency>    
+    </dependencies>
+</project>
