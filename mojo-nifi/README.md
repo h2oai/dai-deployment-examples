@@ -10,7 +10,7 @@ The following link is a YouTube video that shows how to deploy the Driverless AI
 
 ## Prerequisites
 
-- Driverless AI Environment (Tested with Driverless AI 1.8.7.1, MOJO Scoring Pipeline 2.4.2)
+- Driverless AI Environment (Tested with Driverless AI 1.9.0, MOJO Scoring Pipeline 2.4.8)
 
 - Launch Ubuntu 18.04 Linux EC2 instance
     - Instance Type: t2.2xlarge
@@ -20,7 +20,7 @@ The following link is a YouTube video that shows how to deploy the Driverless AI
 - Download the Driverless AI Deployment Repo to your local machine since we will be using the NiFi Data Flow xml templates that come with mojo-nifi/ folder.
 
 ~~~bash
-git clone -b mojo-nifi https://github.com/james94/dai-deployment-examples/
+git clone https://github.com/h2oai/dai-deployment-examples
 ~~~
 
 ## Task 1: Set Up Environment
@@ -182,7 +182,7 @@ rm -rf example.csv
 ~~~bash
 cd $HOME
 # Download NiFi
-wget https://downloads.apache.org/nifi/1.11.4/nifi-1.11.4-bin.tar.gz
+wget https://archive.apache.org/dist/nifi/1.11.4/nifi-1.11.4-bin.tar.gz
 # Extract NiFi tar.gz
 tar -xvf nifi-1.11.4-bin.tar.gz
 ~~~
@@ -193,7 +193,7 @@ tar -xvf nifi-1.11.4-bin.tar.gz
 
 ~~~bash
 cd $HOME
-git clone -b mojo-nifi https://github.com/james94/dai-deployment-examples/
+git clone https://github.com/h2oai/dai-deployment-examples
 ~~~
 
 2\. Compile the Java code for the NiFi processor into a **NAR package**:
