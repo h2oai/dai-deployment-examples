@@ -26,10 +26,6 @@ dependencies {
     implementation "ai.h2o:mojo2-runtime-impl:${mojoVersion}"
     // Config library
     implementation "com.typesafe:config:${configVersion}"
-
-    // Use JUnit test framework
-    testImplementation 'junit:junit:4.12'
-    testImplementation 'com.h2database:h2:1.4.199'
 }
 
 application {

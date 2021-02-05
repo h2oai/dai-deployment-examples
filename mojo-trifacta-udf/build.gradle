@@ -1,0 +1,43 @@
+buildscript {
+  repositories {
+    jcenter()
+  }
+  dependencies {
+    classpath 'com.github.jengelman.gradle.plugins:shadow:2.0.2'
+  }
+}
+
+apply plugin: 'java'
+apply plugin: 'com.github.johnrengelman.shadow'
+apply plugin: 'eclipse'
+
+description = 'Trifacta User Defined Function SDK'
+
+repositories {
+  jcenter()
+  mavenCentral()
+}
+
+dependencies {
+  // Trifacta UDF Dependency
+  compile fileTree(dir: 'dependencies', include: '*.jar')
+  // MOJO2 Runtime
+  implementation group: 'ai.h2o', name: 'mojo2-runtime-api', version: mojoVersion
+  implementation group: 'ai.h2o', name: 'mojo2-runtime-impl', version: mojoVersion
+  // Additional dependencies
+  implementation group: 'com.google.code.gson', name: 'gson', version: gsonVersion
+  testCompile "junit:junit:4.10"
+}
+
+shadowJar {
+  manifest {
+    attributes('Implementation-Title': 'DAI Trifacta UDF',
+               'Implementation-Version': '0.0.1')
+  }
+  shadowJar.archiveName('h2oai-dai-trifacta-udf.jar')
+  mergeServiceFiles()
+}
+
+task wrapper(type: Wrapper) {
+  gradleVersion = '4.7'
+}
