@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<AlteryxJavaScriptPlugin>
+   <Properties>
+      <MetaInfo>
+		<Name>DriverlessAI - Alteryx Plugin</Name>
+		<Description>These tools allow you to interface with DriverlessAI to create experiments and predictions using data from Alteryx</Description>
+		<ToolVersion>1.3</ToolVersion>
+		<CategoryName>Predictive</CategoryName>
+		<Author>H2O.AI</Author>
+        <Icon>h2o_new_border.png</Icon>
+      </MetaInfo>
+   </Properties>
+</AlteryxJavaScriptPlugin>
