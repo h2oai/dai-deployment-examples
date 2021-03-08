@@ -1,11 +1,11 @@
-import AlteryxPythonSDK as Sdk
-import xml.etree.ElementTree as Et
-import h2oai_client
 import csv
-import webbrowser
 import os
+import webbrowser
+import xml.etree.ElementTree as Et
+
+import AlteryxPythonSDK as Sdk
+import h2oai_client
 import pandas as pd
-from h2oai_client import messages, references
 
 
 class AyxPlugin:

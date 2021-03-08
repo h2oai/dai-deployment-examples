@@ -1,11 +1,12 @@
-import AlteryxPythonSDK as Sdk
-import xml.etree.ElementTree as Et
-import h2oai_client
 import csv
-from pathlib import Path
 import os
 import webbrowser
+import xml.etree.ElementTree as Et
+from pathlib import Path
 from time import sleep
+
+import AlteryxPythonSDK as Sdk
+import h2oai_client
 
 
 class AyxPlugin:
