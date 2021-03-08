@@ -5,6 +5,7 @@ import csv
 import webbrowser
 import os
 import pandas as pd
+from h2oai_client import messages, references
 
 
 class AyxPlugin:
@@ -138,8 +139,15 @@ class AyxPlugin:
         Called after all records have been processed.
         :param b_has_errors: Set to true to not do the final processing.
         """
-        params = self.dai.get_experiment_tuning_suggestion(self.train, self.target_name, self.is_classification,
-                                                           self.is_timeseries, self.config_string)
+        params = self.dai.get_experiment_tuning_suggestion(
+            dataset_key=self.train,
+            target_col=self.target_name,
+            is_classification=self.is_classification,
+            is_time_series=self.is_timeseries,
+            config_overrides=self.config_string,
+            cols_to_drop=[],
+            is_image=False
+        )
         params.accuracy = self.accuracy
         params.time = self.time
         params.interpretability = self.interpretability
