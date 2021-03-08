@@ -6,6 +6,7 @@ import xml.etree.ElementTree as Et
 import AlteryxPythonSDK as Sdk
 import h2oai_client
 import pandas as pd
+from h2oai_client import messages, references
 
 
 class AyxPlugin:
@@ -139,15 +140,36 @@ class AyxPlugin:
         Called after all records have been processed.
         :param b_has_errors: Set to true to not do the final processing.
         """
-        params = self.dai.get_experiment_tuning_suggestion(
-            dataset_key=self.train,
+        model_params = messages.ModelParameters(
+            dataset=references.DatasetReference(self.train),
+            resumed_model=references.ModelReference(""),
             target_col=self.target_name,
+            weight_col="",
+            fold_col="",
+            orig_time_col="",
+            time_col="",
             is_classification=self.is_classification,
-            is_time_series=self.is_timeseries,
-            config_overrides=self.config_string,
             cols_to_drop=[],
-            is_image=False
+            validset=references.DatasetReference(self.valid),
+            testset=references.DatasetReference(self.test),
+            enable_gpus=False,
+            seed=False,
+            accuracy=1,
+            time=1,
+            interpretability=10,
+            score_f_name=None,
+            time_groups_columns=None,
+            unavailable_columns_at_prediction_time=[],
+            time_period_in_seconds=None,
+            num_prediction_periods=None,
+            num_gap_periods=None,
+            is_timeseries=self.is_timeseries,
+            cols_imputation=[],
+            config_overrides=self.config_string,
+            custom_features=[],
+            is_image=False,
         )
+        params = self.dai.get_experiment_tuning_suggestion(model_params)
         params.accuracy = self.accuracy
         params.time = self.time
         params.interpretability = self.interpretability
