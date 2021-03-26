@@ -1,9 +1,10 @@
-import AlteryxPythonSDK as Sdk
-import xml.etree.ElementTree as Et
-import h2oai_client
 import csv
-from pathlib import Path
 import os
+import xml.etree.ElementTree as Et
+from pathlib import Path
+
+import AlteryxPythonSDK as Sdk
+import h2oai_client
 import pandas as pd
 
 
@@ -58,9 +59,33 @@ class AyxPlugin:
         # Get connection information
         base = Et.fromstring(str_xml)
         addr = base.find('Address').text if 'Address' in str_xml else 'http://prerelease.h2o.ai'
-        username = base.find('Username').text if 'Username' in str_xml else 'h2oai'
-        password = self.alteryx_engine.decrypt_password(base.find('Password').text, 0) if 'Password' in str_xml else 'h2oai'
-        self.dai = h2oai_client.Client(address=addr, username=username, password=password, verify=verify)
+        use_oauth = base.find('UseOAuth').text == "True" if 'UseOAuth' in str_xml else False
+
+        if use_oauth:
+            endpoint_url = base.find('EndpointURL').text \
+                if 'EndpointURL' in str_xml else 'No Endpoint URL Provided'
+            introspection_url = base.find('IntrospectionURL').text \
+                if 'IntrospectionURL' in str_xml else 'No Introspection URL Provided'
+            client_id = base.find('ClientID').text \
+                if 'ClientID' in str_xml else 'No Client ID Provided'
+            refresh_token = self.alteryx_engine.decrypt_password(base.find('RefreshToken').text, 0) \
+                if 'RefreshToken' in str_xml else 'No Token Provided'
+            token_provider = h2oai_client.OAuth2tokenProvider(
+                refresh_token=refresh_token,
+                client_id=client_id,
+                token_endpoint_url=endpoint_url,
+                token_introspection_url=introspection_url
+            )
+            self.dai = h2oai_client.Client(
+                address=addr,
+                token_provider=token_provider.ensure_fresh_token,
+                verify=verify,
+            )
+        else:
+            username = base.find('Username').text if 'Username' in str_xml else 'h2oai'
+            password = self.alteryx_engine.decrypt_password(base.find('Password').text, 0) \
+                if 'Password' in str_xml else 'h2oai'
+            self.dai = h2oai_client.Client(address=addr, username=username, password=password, verify=verify)
 
         # Valid target name checks.
         error_msg = self.msg_str(self.str_file_path)

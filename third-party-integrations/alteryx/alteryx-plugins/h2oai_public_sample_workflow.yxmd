@@ -1,57 +1,59 @@
 <?xml version="1.0"?>
-<AlteryxDocument yxmdVer="2019.1">
+<AlteryxDocument yxmdVer="2021.1">
   <Nodes>
     <Node ToolID="1">
       <GuiSettings Plugin="AlteryxBasePluginsGui.DbFileInput.DbFileInput">
-        <Position x="54" y="210" />
+        <Position x="54" y="215" />
       </GuiSettings>
       <Properties>
         <Configuration>
           <Passwords />
-          <File OutputFileName="" RecordLimit="" SearchSubDirs="False" FileFormat="0">C:\Users\Administrator\Downloads\default.csv</File>
+          <File RecordLimit="" SearchSubDirs="False" FileFormat="0" OutputFileName="">\\tsclient\share\creditcard_train_cat.csv</File>
           <FormatSpecificOptions>
-            <CodePage>28591</CodePage>
-            <Delimeter>,</Delimeter>
-            <IgnoreErrors>False</IgnoreErrors>
-            <FieldLen>254</FieldLen>
-            <AllowShareWrite>False</AllowShareWrite>
             <HeaderRow>True</HeaderRow>
-            <IgnoreQuotes>DoubleQuotes</IgnoreQuotes>
+            <IgnoreErrors>False</IgnoreErrors>
+            <AllowShareWrite>False</AllowShareWrite>
             <ImportLine>1</ImportLine>
+            <FieldLen>254</FieldLen>
+            <SingleThreadRead>False</SingleThreadRead>
+            <IgnoreQuotes>DoubleQuotes</IgnoreQuotes>
+            <Delimeter>,</Delimeter>
+            <QuoteRecordBreak>False</QuoteRecordBreak>
+            <CodePage>28591</CodePage>
           </FormatSpecificOptions>
         </Configuration>
         <Annotation DisplayMode="0">
           <Name />
-          <DefaultAnnotationText>default.csv</DefaultAnnotationText>
+          <DefaultAnnotationText>creditcard_train_cat.csv</DefaultAnnotationText>
           <Left value="False" />
         </Annotation>
         <MetaInfo connection="Output">
           <RecordInfo>
-            <Field name="ID" size="254" source="File: C:\Users\Administrator\Downloads\default.csv" type="V_String" />
-            <Field name="LIMIT_BAL" size="254" source="File: C:\Users\Administrator\Downloads\default.csv" type="V_String" />
-            <Field name="SEX" size="254" source="File: C:\Users\Administrator\Downloads\default.csv" type="V_String" />
-            <Field name="EDUCATION" size="254" source="File: C:\Users\Administrator\Downloads\default.csv" type="V_String" />
-            <Field name="MARRIAGE" size="254" source="File: C:\Users\Administrator\Downloads\default.csv" type="V_String" />
-            <Field name="AGE" size="254" source="File: C:\Users\Administrator\Downloads\default.csv" type="V_String" />
-            <Field name="PAY_0" size="254" source="File: C:\Users\Administrator\Downloads\default.csv" type="V_String" />
-            <Field name="PAY_2" size="254" source="File: C:\Users\Administrator\Downloads\default.csv" type="V_String" />
-            <Field name="PAY_3" size="254" source="File: C:\Users\Administrator\Downloads\default.csv" type="V_String" />
-            <Field name="PAY_4" size="254" source="File: C:\Users\Administrator\Downloads\default.csv" type="V_String" />
-            <Field name="PAY_5" size="254" source="File: C:\Users\Administrator\Downloads\default.csv" type="V_String" />
-            <Field name="PAY_6" size="254" source="File: C:\Users\Administrator\Downloads\default.csv" type="V_String" />
-            <Field name="BILL_AMT1" size="254" source="File: C:\Users\Administrator\Downloads\default.csv" type="V_String" />
-            <Field name="BILL_AMT2" size="254" source="File: C:\Users\Administrator\Downloads\default.csv" type="V_String" />
-            <Field name="BILL_AMT3" size="254" source="File: C:\Users\Administrator\Downloads\default.csv" type="V_String" />
-            <Field name="BILL_AMT4" size="254" source="File: C:\Users\Administrator\Downloads\default.csv" type="V_String" />
-            <Field name="BILL_AMT5" size="254" source="File: C:\Users\Administrator\Downloads\default.csv" type="V_String" />
-            <Field name="BILL_AMT6" size="254" source="File: C:\Users\Administrator\Downloads\default.csv" type="V_String" />
-            <Field name="PAY_AMT1" size="254" source="File: C:\Users\Administrator\Downloads\default.csv" type="V_String" />
-            <Field name="PAY_AMT2" size="254" source="File: C:\Users\Administrator\Downloads\default.csv" type="V_String" />
-            <Field name="PAY_AMT3" size="254" source="File: C:\Users\Administrator\Downloads\default.csv" type="V_String" />
-            <Field name="PAY_AMT4" size="254" source="File: C:\Users\Administrator\Downloads\default.csv" type="V_String" />
-            <Field name="PAY_AMT5" size="254" source="File: C:\Users\Administrator\Downloads\default.csv" type="V_String" />
-            <Field name="PAY_AMT6" size="254" source="File: C:\Users\Administrator\Downloads\default.csv" type="V_String" />
-            <Field name="default payment next month" size="254" source="File: C:\Users\Administrator\Downloads\default.csv" type="V_String" />
+            <Field name="ID" size="254" source="File: \\tsclient\share\creditcard_train_cat.csv" type="V_String" />
+            <Field name="LIMIT_BAL" size="254" source="File: \\tsclient\share\creditcard_train_cat.csv" type="V_String" />
+            <Field name="SEX" size="254" source="File: \\tsclient\share\creditcard_train_cat.csv" type="V_String" />
+            <Field name="EDUCATION" size="254" source="File: \\tsclient\share\creditcard_train_cat.csv" type="V_String" />
+            <Field name="MARRIAGE" size="254" source="File: \\tsclient\share\creditcard_train_cat.csv" type="V_String" />
+            <Field name="AGE" size="254" source="File: \\tsclient\share\creditcard_train_cat.csv" type="V_String" />
+            <Field name="PAY_1" size="254" source="File: \\tsclient\share\creditcard_train_cat.csv" type="V_String" />
+            <Field name="PAY_2" size="254" source="File: \\tsclient\share\creditcard_train_cat.csv" type="V_String" />
+            <Field name="PAY_3" size="254" source="File: \\tsclient\share\creditcard_train_cat.csv" type="V_String" />
+            <Field name="PAY_4" size="254" source="File: \\tsclient\share\creditcard_train_cat.csv" type="V_String" />
+            <Field name="PAY_5" size="254" source="File: \\tsclient\share\creditcard_train_cat.csv" type="V_String" />
+            <Field name="PAY_6" size="254" source="File: \\tsclient\share\creditcard_train_cat.csv" type="V_String" />
+            <Field name="BILL_AMT1" size="254" source="File: \\tsclient\share\creditcard_train_cat.csv" type="V_String" />
+            <Field name="BILL_AMT2" size="254" source="File: \\tsclient\share\creditcard_train_cat.csv" type="V_String" />
+            <Field name="BILL_AMT3" size="254" source="File: \\tsclient\share\creditcard_train_cat.csv" type="V_String" />
+            <Field name="BILL_AMT4" size="254" source="File: \\tsclient\share\creditcard_train_cat.csv" type="V_String" />
+            <Field name="BILL_AMT5" size="254" source="File: \\tsclient\share\creditcard_train_cat.csv" type="V_String" />
+            <Field name="BILL_AMT6" size="254" source="File: \\tsclient\share\creditcard_train_cat.csv" type="V_String" />
+            <Field name="PAY_AMT1" size="254" source="File: \\tsclient\share\creditcard_train_cat.csv" type="V_String" />
+            <Field name="PAY_AMT2" size="254" source="File: \\tsclient\share\creditcard_train_cat.csv" type="V_String" />
+            <Field name="PAY_AMT3" size="254" source="File: \\tsclient\share\creditcard_train_cat.csv" type="V_String" />
+            <Field name="PAY_AMT4" size="254" source="File: \\tsclient\share\creditcard_train_cat.csv" type="V_String" />
+            <Field name="PAY_AMT5" size="254" source="File: \\tsclient\share\creditcard_train_cat.csv" type="V_String" />
+            <Field name="PAY_AMT6" size="254" source="File: \\tsclient\share\creditcard_train_cat.csv" type="V_String" />
+            <Field name="DEFAULT_PAYMENT_NEXT_MONTH" size="254" source="File: \\tsclient\share\creditcard_train_cat.csv" type="V_String" />
           </RecordInfo>
         </MetaInfo>
       </Properties>
@@ -59,7 +61,7 @@
     </Node>
     <Node ToolID="2">
       <GuiSettings>
-        <Position x="186" y="210" />
+        <Position x="186" y="215" />
       </GuiSettings>
       <Properties>
         <Configuration>
@@ -77,7 +79,7 @@
     </Node>
     <Node ToolID="20">
       <GuiSettings Plugin="AlteryxGuiToolkit.ToolContainer.ToolContainer">
-        <Position x="329" y="49" width="241.8334" height="317" />
+        <Position x="329" y="54" width="241" height="317" />
       </GuiSettings>
       <Properties>
         <Configuration>
@@ -95,21 +97,19 @@
       <ChildNodes>
         <Node ToolID="3">
           <GuiSettings Plugin="DAICreateDataset">
-            <Position x="368" y="166" />
+            <Position x="368" y="171" />
           </GuiSettings>
           <Properties>
             <Configuration>
-              <Address>
-              </Address>
-              <Username>
-              </Username>
-              <Password>
-              </Password>
+              <Address>https://dai-server.example.com</Address>
+              <UseHttps>True</UseHttps>
+              <Username>user1</Username>
               <DataImportSource>upload</DataImportSource>
               <DataLocation>
               </DataLocation>
               <DoAutoViz>True</DoAutoViz>
               <DisplayBrowser>True</DisplayBrowser>
+              <Password>201000000D08C9DDF0115D1118C7A00C04FC297EB01000000441BA06A1826C141896639240A1E030B04000000080000005000570044000000106600000001000020000000961D675DB9B59809495D92EB34A2559ADBBD14A07EF20864AC7175BD739A54A6000000000E80000000020000200000009C475B09C8E4963FF753A359AC92D497C85088690884E3862C8A064D59E819C6C0030000610ACC16C33A1F35D41CC44981D59D9AB7F6C5674ADBA799ECFA0E4B82F420E04B7B38323A6A16F2B1A4AF479A12D184DCE488D1B5FC323F7B70C2105D080A87A2C03109C28932B1F7C497FDBD7C7974BFFDCB7CFF4B76615270A96CC08F27E817B4D2AB40DB3DA594080DFC5F4796D8BE58867F16072CB4BE2C950F2C39C9302915B493E966B884D06A33B1B9A85944964A1D48FB3B04104D059A2CFB04F3409EC6AA86520B9B659156487812F630973890CCDF4F96C950A588DEAFB326537BB98DB66B440F6662E247BBB086A1E41D82698904F7C43EE3335F1B766F89A88A0E7377A1B8C563105AC92679DD32BA647E27D35853E82FBB8AFE423AB2103A4FEC60174F5F7244F3ED2DC9E758B197E0F8623B931CFFDAF64D5DBEF6F8E1B3F935DC840609F957111AEF3B75EBCC8F97427250AFCBA674CD6BF971FFB958C85C3926B445F237F318B57F8FFBD863184B0904D9F2BBAD00AE6A7CCA258FA6D59192AEC3A26913A1427111C895351F1862A8F32466C20C6CA50930F297CE064E7BFE1CA374B710E67F2727A33F5D0D8B482FE350AAF8992CAC933905FF65246F70B08E22FC73446F3A1D9354E0108F4B07209E5791CFF7D875957890FF52925AF872FE7158499818687DEEBA5E30D8C63A8B1E542B4E0EDEA5D0C1C8980596833B5978DAB3E0927C0EC143E19690CA2DA02DEDC2FC4271934073047C356FD3E2DBF41B2300BF3C9FEA3EF197227199B027C5540DDA77269FAD6EF801C679D78B66717AC69E509DABC3469034744B9E389E1A61363B1B0B939E773549506CF537B6FE7B225F6293B481CE79A0D01CBE4F7F3738D4EF12197AA7BE343FBE46B34679D585726FAD6ABB50A098EE04026AD24C82F773C928DA3DF7CCC92217C6F81DF08E8D83777B9593C8058F613BE39DD360E82DE06D2B9E8E52166180A4A5F7F20722B291085779FEF3FBD570A94FFBD8C06D6B0716A720DAF67B0FEF86775E2250A5D4BBF5DA33C6C02F7CAF08C0703D8FF9D514828BB376E1A176591ED8E7C93835B200A05566C4A76873262B1CF47C6AE865861EB43D19B00ED0D456DD2781E02D20054329D43872CC9C1AA445D7E474D4099653AAE2B7013846D771EA989208FD0CEE713429503FC13C2B525123464E1CBFAA7CB918CA5F4B8800441EF3FE0AE5EC22785C45BA680B83C6C44950D37AF9FB62505FB65901A7D005210ACE7C908D64B02CDE53D29D9E6850C22F9BEAC5F0836952E4727EBCBC1B9C919246D574B4CEC823C3CA64D4919760F548B729AD1F12A33245CEAEA4F19CAB10B3460CCF9A22745F060BC2A8EF0473D270F5D410D8B9CA5DA98B4B85F502EDF3DAD0BE3D4000000086F12D9428FBEFF9FB12757C04066AF20E21EEA5BD15A2B480CB0F361AC4FD5B873921570A703C0B3F18BE62BC96917A83CE98B1F3E2B4835526816E45A057C9</Password>
             </Configuration>
             <Annotation DisplayMode="0">
               <Name />
@@ -121,21 +121,19 @@
         </Node>
         <Node ToolID="4">
           <GuiSettings Plugin="DAICreateDataset">
-            <Position x="366" y="282" />
+            <Position x="366" y="287" />
           </GuiSettings>
           <Properties>
             <Configuration>
-              <Address>
-              </Address>
-              <Username>
-              </Username>
-              <Password>
-              </Password>
+              <Address>https://dai-server.example.com</Address>
+              <UseHttps>True</UseHttps>
+              <Username>user1</Username>
               <DataImportSource>upload</DataImportSource>
               <DataLocation>
               </DataLocation>
               <DoAutoViz>False</DoAutoViz>
               <DisplayBrowser>False</DisplayBrowser>
+              <Password>201000000D08C9DDF0115D1118C7A00C04FC297EB01000000441BA06A1826C141896639240A1E030B04000000080000005000570044000000106600000001000020000000CE91BB0343EFAE252ECF982C079887ACFE9D9537A475C76F9C2B4854F0BA5DA6000000000E80000000020000200000006463B593D1F56600C9B62D865CA5E616632E672B0A782BDEB8B2CE0915936627C0030000DFA8713A8FF83114D598075C9797DB96580BC943D111E2045A07F99E3E1590D671E7EC12DE0E95A828EBB00A2F69925E56B716E9CA8D72AF60A827A7DED31FE4BE7F1E2AB2D015D11AE33577BA24ED2278004AFBF8D3CC578C87CC3234B9EA7E76DE0FBAE630AB5F230E5CD0B4F2FD03499F01EF3D1ABA31445D19CBD04762ECB8BAC0B18A31ED6F5B2E335D0E6F4052FC874235F6DF2E7B0FE06FDDFEF12EE61BD5B21D414F2C5865EA324D280876EDA0675B85C618C011F36037EB2A33B428A66CB0B000EA7DFBE07B588C1330131B2912FD5F9A601A7E93EE2D04873AFDFEECAFBFF6AE74F4C07F0F7035D72BE5AF697209634737AA233D63C172C54D22BAF7727C99B2487EF7ED985F67FB36B761810C86C6021A8B551CD7699E0C8E5E02D0C123C388BCA4B43D6615D6925EDA4F37B6EFDF07EE7D04540DBBD6BD4EAE0BADB36ECDD73106E8D5210D16949B555A9011D5690CCFDABA71BBD2BB48E28A91BA9A9AD7CCBA03C349A660C30B39F35B0DD8AA41581D975C385973F3AE97065D2FAD5A5B4AEC97D61A844C536699519AF206EF09F88F3C9794C5B0BC6F0D45735C935AF05870B893BF1AB3BC1414CB34B99A4FD73C71B9764BBBF819266869650C9A536812931262388F7A35CA11A373863C81C88FB68D6E6367E7DF5A1921B3C2BAB9062588AF40F78520C23A2E8B3996430790909314F9BC59AF492B59B655B46ACAEF87AA4D32330957EDC9A54307E727523D36A3DFC381201F67975BCA991899B8F02BD2F0E722B555524BF2F58BEDA6FD2E83F2BC86A58294839E8D918C1D06D5FF4F404F67A4F3F0D898343E7D78B75C738366886BC850E38E7C3BF0D54B5FC01836B3DE30A2186FB43F032AC796DCD05B7C2FBFC662AF98A2C0A96CCDB3B139E6A970B3BDA7DB23E9C11BC19057349068076E29AE6A778EF4B5A622E62337C142A2556C43544ADDECCEB8898B20CBF55147C2262C89492A023FB24AAF1813FFCF2E7FD5B7479F4351F3F576D3AE236C1B90DD7DAE7D892C621CE128261A1A101EA791F60A650922246521C0491C5D6B09A1E6C594C06BF1BC11081AE473C10C28EB84CD8415C244D86B25571D59486B522984BA537CE40BE8745E676337BA88D84C965D2ED8A39C51F60CF2F7295B70BA0921902B34DDE7A7E92E59AECAE01B17C1DB5031FB806728E16A11F7C25A6B1D187FF9EB70D69A383C2FD09AA216C04F6D8AB6FE13FBD8B2C0A2B43333BB3C0D36DA5EBDE6D02FA4DA6E81C6C343792C36318C0F92F3B0F62B171A0E3AB1E33B79DF61810E712B12EE1B60C5BD1A7C41E0DB9F3D8B24F0519EF61F057671C6C0A889953985282484168F10D640000000220847341463EE6CE65D09A700F9DA6B6593FA5A47C9CDF40F3EE798F08E8947D986DF4B81290340590C08555027A00AFFFB1EAC570CFA72E7ADAD41351C0584</Password>
             </Configuration>
             <Annotation DisplayMode="0">
               <Name />
@@ -147,11 +145,11 @@
         </Node>
         <Node ToolID="5">
           <GuiSettings Plugin="AlteryxBasePluginsGui.BrowseV2.BrowseV2">
-            <Position x="486" y="102" />
+            <Position x="486" y="107" />
           </GuiSettings>
           <Properties>
             <Configuration>
-              <TempFile>C:\Users\ADMINI~1\AppData\Local\Temp\2\Engine_5048_a616ff1aec6a476586142a17b12c7db6_\Engine_6728_767dbbf2bc514596bfc9fb721ee7ba85_.yxdb</TempFile>
+              <TempFile>C:\Users\ADMINI~1.EC2\AppData\Local\Temp\2\Engine_5536_ec4c128b48b244b29d1d7662a40950a7_\Engine_4144_6b55635956ef4253b9654e7dde949877_.yxdb</TempFile>
               <TempFileDataProfiling />
               <Layout>
                 <ViewMode>Single</ViewMode>
@@ -175,7 +173,7 @@
         </Node>
         <Node ToolID="23">
           <GuiSettings Plugin="AlteryxGuiToolkit.TextBox.TextBox">
-            <Position x="355" y="98" width="96" height="40" />
+            <Position x="355" y="103" width="96" height="40" />
           </GuiSettings>
           <Properties>
             <Configuration>
@@ -195,7 +193,7 @@
         </Node>
         <Node ToolID="24">
           <GuiSettings Plugin="AlteryxGuiToolkit.TextBox.TextBox">
-            <Position x="354" y="246" width="100" height="36" />
+            <Position x="354" y="251" width="100" height="36" />
           </GuiSettings>
           <Properties>
             <Configuration>
@@ -217,7 +215,7 @@
     </Node>
     <Node ToolID="19">
       <GuiSettings Plugin="AlteryxGuiToolkit.ToolContainer.ToolContainer">
-        <Position x="617" y="49.00002" width="326" height="501" />
+        <Position x="617" y="54" width="326" height="501" />
       </GuiSettings>
       <Properties>
         <Configuration>
@@ -235,18 +233,14 @@
       <ChildNodes>
         <Node ToolID="6">
           <GuiSettings Plugin="DAIRunExperiment">
-            <Position x="704" y="166" />
+            <Position x="704" y="171" />
           </GuiSettings>
           <Properties>
             <Configuration>
-              <Address>
-              </Address>
-              <Username>
-              </Username>
-              <Password>
-              </Password>
-              <TargetColumn>
-              </TargetColumn>
+              <Address>https://dai-server.example.com</Address>
+              <UseHttps>True</UseHttps>
+              <Username>user1</Username>
+              <TargetColumn>DEFAULT_PAYMENT_NEXT_MONTH</TargetColumn>
               <Accuracy>1</Accuracy>
               <Time>1</Time>
               <Interpretability>10</Interpretability>
@@ -259,6 +253,7 @@
               </AdditionalUserConfigs>
               <DisplayBrowser>True</DisplayBrowser>
               <TimeSeriesDropdown>False</TimeSeriesDropdown>
+              <Password>201000000D08C9DDF0115D1118C7A00C04FC297EB01000000441BA06A1826C141896639240A1E030B040000000800000050005700440000001066000000010000200000004A660F79553BCAB420D9A26696D34411F6FE21F7EC3106B3919C85D31ACA0152000000000E800000000200002000000084CA79C8037D871D7C47133627EE958AAE04162468B39C0E392CF29E5D67A179C0030000DC166219A33D16A13E8D4AFA2095ED483CB5B2CA47A1471A171CF669D5F3E94EB5DE44F9673A519B5BF0052D3D8A9BB8960959A570266F8B75C422692E3DF9D6F7B78AB2EA71D00076235FE694AAF90B95B38A9F308FEDB8281BE56A777E64F325AD4ADB8221A8956405ED08249D8E2BE783BDA2E8504CAD82F0CDE71306CD6390905410DFCCE8141EB9D7E9414D9165C7C6CEB746E2F6B2E84623680F23473659FF6A81F4BA1F56CDA9D4BF1DF8E85D9E6D734CFF96F26E5804A8C613D43D1F03960C810B8DE8D0E9F28E0A272DAB35CDC726992A981F54A02CD1A9CFC1156F6680C4BCA54E39FF11AADC7F3CF138C99E363A0C2927E3F691BFC35D4640B2038DB8DD5472CBB8563D44A113043A96E320F6A4B8C728A5917C6A0F2D486B37FCE03DAC3FB03C748A4BACB4DF515D24386AE34E4DF38CA75ABB3B03401C9A2C16A9DE2C033CB0ABDB7B3BC4AE22193F19D6E1BBFB404121AD3482AE0B79F6D3BACB012536A3D39524F4A6AC31A0A130CA22F32EEC0EE15BF63901D9D2524CAC46153562E824B8F11CEDE66CA0D1463591A227C4149104E7A8AB07B1DC0979618EC3F212C96CAF07A5BFD7712777756879E27B1FB2D0743937D9C37C4A5287EFE3ED6BB50D8C54291E5F13500C9BBE77B27B8276E6AE3A2CD74B384845269FA202B9F234E3AB096E949E897FF7495AEF1D93BA6DAF2452BA443F2A32F24A12913504A0E6FC6715FDE3DE45CC8AE14B3993063ADA5E8E7C63FBBF35F9FB5B25FFE085539A7CB9176C88829365D03B705996EE5220503FA65AA1C1AE7FE3CFB5EAAC8A5A532FA4FFB465AEC5B9EF349FFEF31EA27DC74F6A9EBBA03099D768E2F29D5CDE119C54BDB180AD2CD3621D5CC81D34116B7705B908799A316201ECA009F5ED7BC6C2EF8183488C6955FAC25561EEE40B14C47C8DB6350DC57E637216D58E20E5EDC435BAFB79E27DED1805ABF03C82FCA9040A82EDE8B50548E69CE590870CFC612B18C7F994D85A552848AF8C1CEFDB31100554CC780CF63DAE7A5F830E6C4AA1F520D8705B954581DF98B7B1EBBE900D61A9F51BCD42D4F09451595EECF71EDA04D85E5A72C67DF1820E763F19B00601F63A57827EB59FBDC982BDEFF00DB048E3C695A85E0A9FBE89C404701C565510CF511D3DA14B2EF36FF396DFFB7AC7FAA22FF938C4E9A988785017F73C6387624CD0896E61E076B683D41FDDB98615CB23527CA11BC7DA18DC687656536BDCFF57936A1C6A9C3C59189477ED9B66F82683304973A58D867E3B57F29084DF328D543FC67BF5D42E4E1D43DF2358158C682D643B1AEB724686DE77FB57A35E85B7AD5451931FF174258809DE431940000000C8616317321329DAC75DB04A2A12CEA9E26D90E450D3A312A89F8A1AFFBD21C916B72D874AE35FC0C29960C14D36D64FC6650604EF20D6715DD75CCE8A051ABA</Password>
             </Configuration>
             <Annotation DisplayMode="0">
               <Name />
@@ -270,11 +265,11 @@
         </Node>
         <Node ToolID="7">
           <GuiSettings Plugin="AlteryxBasePluginsGui.BrowseV2.BrowseV2">
-            <Position x="812" y="117.9999" />
+            <Position x="810" y="126" />
           </GuiSettings>
           <Properties>
             <Configuration>
-              <TempFile>C:\Users\ADMINI~1\AppData\Local\Temp\2\Engine_5048_a616ff1aec6a476586142a17b12c7db6_\Engine_6728_0306252ef19245e38d5cda7540b47246_.yxdb</TempFile>
+              <TempFile>C:\Users\ADMINI~1.EC2\AppData\Local\Temp\2\Engine_5536_ec4c128b48b244b29d1d7662a40950a7_\Engine_4144_8f8f19e7d44748599cfe8e27ba37f5b6_.yxdb</TempFile>
               <TempFileDataProfiling />
               <Layout>
                 <ViewMode>Single</ViewMode>
@@ -298,11 +293,11 @@
         </Node>
         <Node ToolID="8">
           <GuiSettings Plugin="AlteryxBasePluginsGui.BrowseV2.BrowseV2">
-            <Position x="812" y="214" />
+            <Position x="810" y="210" />
           </GuiSettings>
           <Properties>
             <Configuration>
-              <TempFile>C:\Users\ADMINI~1\AppData\Local\Temp\2\Engine_5048_a616ff1aec6a476586142a17b12c7db6_\Engine_6728_b39efb4e87b1428484dafa1052b23e6c_.yxdb</TempFile>
+              <TempFile>C:\Users\ADMINI~1.EC2\AppData\Local\Temp\2\Engine_5536_ec4c128b48b244b29d1d7662a40950a7_\Engine_4144_2d26d8187b134e7fb0fe6e15bd475242_.yxdb</TempFile>
               <TempFileDataProfiling />
               <Layout>
                 <ViewMode>Single</ViewMode>
@@ -326,11 +321,11 @@
         </Node>
         <Node ToolID="10">
           <GuiSettings Plugin="AlteryxBasePluginsGui.BrowseV2.BrowseV2">
-            <Position x="812" y="466" />
+            <Position x="812" y="471" />
           </GuiSettings>
           <Properties>
             <Configuration>
-              <TempFile>C:\Users\ADMINI~1\AppData\Local\Temp\2\Engine_5048_a616ff1aec6a476586142a17b12c7db6_\Engine_6728_f96c77a4d4af4dbe800018b687c5fce1_.yxdb</TempFile>
+              <TempFile>C:\Users\ADMINI~1.EC2\AppData\Local\Temp\2\Engine_5536_ec4c128b48b244b29d1d7662a40950a7_\Engine_4144_02710c92b6e64239a5af5910ea101803_.yxdb</TempFile>
               <TempFileDataProfiling />
               <Layout>
                 <ViewMode>Single</ViewMode>
@@ -354,7 +349,7 @@
         </Node>
         <Node ToolID="11">
           <GuiSettings Plugin="AlteryxBasePluginsGui.Join.Join">
-            <Position x="704.0001" y="466" />
+            <Position x="704" y="471" />
           </GuiSettings>
           <Properties>
             <Configuration joinByRecordPos="True">
@@ -378,18 +373,16 @@
         </Node>
         <Node ToolID="12">
           <GuiSettings Plugin="DAIPredict">
-            <Position x="704.0001" y="322" />
+            <Position x="704" y="327" />
           </GuiSettings>
           <Properties>
             <Configuration>
-              <Address>
-              </Address>
-              <Username>
-              </Username>
-              <Password>
-              </Password>
+              <Address>https://dai-server.example.com</Address>
+              <UseHttps>True</UseHttps>
+              <Username>user1</Username>
               <ModelID>
               </ModelID>
+              <Password>201000000D08C9DDF0115D1118C7A00C04FC297EB01000000441BA06A1826C141896639240A1E030B04000000080000005000570044000000106600000001000020000000E3C468D6CB09411E8A7461CA57FEBB7C8209870FC5835274EDAB008A85B6D621000000000E800000000200002000000025601953482B7E87B7258B676125423F35F5F7A9ECBE5D4CC74FFEBD9A654FB3C00300000D36C653E0A434913B3083FF25176454B298DE21B6441C54C4138730EF25245D481CF7B7B62FD6D4A25E9E8DB0B9A809C2DB766033043229A822D158D671AC87C0AE82A712F3942C9B8FCBC84D50AEF4A1EED70CF02DC1DA403ED77D04C16047CC4DBB18532CF39A41430B80E7E401FDA5A0BDEEC196E1477430BEA63BF5BF9D3F3DD58CE954783320F7AB1BB8A8B495D387CDF72DB3FF0A38E9F887BC7738859C9A939F174470647BCB8E94C1BD54A6CA6D3DA7E50B125B1BA090FE6B9A7CC147D9C90C8995DD63163E911BE46276D8790210D9448DCA94E6C03F3D99162EDDCD54D4029C0583CC1FD3BA5E4134B7E4D3EB67F2CE8956254EFEA2CEF05E4767E1FFAF9947A81B8BDC36C0A6926338B7A1C9386F79E296E9172106F1A4C93B765D650359FF24F97D2957A8DC48231B9D70CE333A274F71AD4A563389D5B346D010EC0D7E57F0FC431AF4665CD2769DFCF57AD80DE9CE6B018A82A70EF3F8F8F337F2FE86E22004C471E5FCB14291F2013011C39942CA38F106300B4A63A4A53CB1F4451AA9FCA888A7B3C634867FFEC897FD72548E5A3A43A73D6675C4C1D1494370F047D4FB78F06EEC8A06B66A1F900B3F542DEE0358FD390B7BF0CB4AE7CD6E6F523BA4EAB7F2AAAE7581513501858FF4D4C2F0A19EEA1EF073764FD2BA90969FDE75AD9E74AA14840EAC47FA0E3033132AF2D1A9E4E2712C301767F5ECF8A6F630D77D20240C023876CC29A867AF4087201B171A6C6DC3D813A6930C11AD654E16A843813F34648D87C287A1593949E1BA325F9D50722BEFF4CD9ED0D8BD4DE80213A6F2814977B1773201ED804CB5B7785F9B6DFD5C79B3035DA25ECFB7E166E83C6E83C7C8E4563AC2D43159C94120541B26ABDC23F70F524FD69A3AA476184F12F0A922391DEC4B5D69030916A857989C42CE95EB1A90FFFCE9035EFCA156F4ECC156056A672568052418FD7304481804B16B035D5ACF90305F6F633B44FB2F816779A90AC4AE10B7E092622E24C10CBF482757145D0F9A1D4FECE110B35AB061B0527EF70CFC427ED0A992D222728433581783BACA30319DF8336BFEBE40C6A69A85BCABB51628D930379C0E2E25F26139DB004B9368C37136442A07F80EC707FD4066EAA5A60F1E459D0F05FE5E2045B47E70EE727750E08C09CBF2D026EA83A2B813DEE5E51BEF10F7926E06A857001079B5904E24F9D3FD70973E86DB07F8494C7236CF17B629BA6969172DDF0A4489AAAF257A66F36345CBEDFBEC7A92E6DAC0589FA1718344036B10F4C59348169A994827B8E52B49EB4C69CFBC009C40675BB1F8BB663D97ABDD0E40D5283202D58D5554C930D1E1ACDAB3D84000000007EC467120E2F28613FC11537737930BD779E907734383373999DC14F3FDA2E5CEE4C531E7F789DE5738E4C8C6362E5B4EECEFD7224F002D1F46F582CEC24F24</Password>
             </Configuration>
             <Annotation DisplayMode="0">
               <Name />
@@ -401,11 +394,11 @@
         </Node>
         <Node ToolID="13">
           <GuiSettings Plugin="AlteryxBasePluginsGui.BrowseV2.BrowseV2">
-            <Position x="812" y="322" />
+            <Position x="812" y="327" />
           </GuiSettings>
           <Properties>
             <Configuration>
-              <TempFile>C:\Users\ADMINI~1\AppData\Local\Temp\2\Engine_5048_a616ff1aec6a476586142a17b12c7db6_\Engine_6728_9c64dab6424c41a6bc97837e5b9c0af8_.yxdb</TempFile>
+              <TempFile>C:\Users\ADMINI~1.EC2\AppData\Local\Temp\2\Engine_5536_ec4c128b48b244b29d1d7662a40950a7_\Engine_4144_7b7fdc19b92046609ef1b8d98a1ef5ad_.yxdb</TempFile>
               <TempFileDataProfiling />
               <Layout>
                 <ViewMode>Single</ViewMode>
@@ -429,7 +422,7 @@
         </Node>
         <Node ToolID="21">
           <GuiSettings Plugin="AlteryxGuiToolkit.TextBox.TextBox">
-            <Position x="691" y="98.00002" width="100" height="24" />
+            <Position x="691" y="103" width="100" height="24" />
           </GuiSettings>
           <Properties>
             <Configuration>
@@ -449,7 +442,7 @@
         </Node>
         <Node ToolID="22">
           <GuiSettings Plugin="AlteryxGuiToolkit.TextBox.TextBox">
-            <Position x="691" y="290" width="100" height="24" />
+            <Position x="691" y="295" width="100" height="24" />
           </GuiSettings>
           <Properties>
             <Configuration>
@@ -469,7 +462,7 @@
         </Node>
         <Node ToolID="25">
           <GuiSettings Plugin="AlteryxGuiToolkit.TextBox.TextBox">
-            <Position x="642" y="402" width="276" height="60" />
+            <Position x="642" y="407" width="276" height="60" />
           </GuiSettings>
           <Properties>
             <Configuration>
@@ -493,7 +486,7 @@ Should be identical to output of Prediction tool on same data</Text>
     </Node>
     <Node ToolID="18">
       <GuiSettings Plugin="AlteryxGuiToolkit.ToolContainer.ToolContainer">
-        <Position x="1002" y="49.00002" width="266.1436" height="189" />
+        <Position x="1002" y="54" width="266" height="189" />
       </GuiSettings>
       <Properties>
         <Configuration>
@@ -511,24 +504,21 @@ Should be identical to output of Prediction tool on same data</Text>
       <ChildNodes>
         <Node ToolID="16">
           <GuiSettings Plugin="DAIRunMli">
-            <Position x="1028" y="154" />
+            <Position x="1028" y="159" />
           </GuiSettings>
           <Properties>
             <Configuration>
-              <Address>
-              </Address>
-              <Username>
-              </Username>
-              <Password>
-              </Password>
+              <Address>https://dai-server.example.com</Address>
+              <UseHttps>True</UseHttps>
+              <Username>user1</Username>
               <ModelID>
               </ModelID>
               <IsTimeSeries>False</IsTimeSeries>
-              <TargetColumn>
-              </TargetColumn>
+              <TargetColumn>DEFAULT_PAYMENT_NEXT_MONTH</TargetColumn>
               <DatasetKey>
               </DatasetKey>
               <DisplayBrowser>True</DisplayBrowser>
+              <Password>201000000D08C9DDF0115D1118C7A00C04FC297EB01000000441BA06A1826C141896639240A1E030B04000000080000005000570044000000106600000001000020000000347669AFF0AE71588BB3D6C1A9915DDD098C4F18FE31DC7771F8642379ADD0F0000000000E8000000002000020000000A1FC2C80470CD9908D5E8FA4C1194B608E31DFD4FAA866834D2ACACC282A87B1C003000004368860D58C6B47A3BEA872B4D94E9C999BD004C24525DBFED1E9D0F019B472379EC0A187BFFFE7712FF6CBB3CA60315A915106FD4E6C9221AAC9E7E14B87D2AADCA05EE64DD1D3B964A90C68C380A917B096423BD01BE6C858AD10A5EB6A6D354583C7BAA34CAB38B621EFB97C10C82864CEB7F92E166D38417CA1D961F87C257355B93A908BA45349B67BAB58AAAEBE8C8B556A2CD85A5116F01C01F8D4E76919D2F69693906BCDC9139D6A6B7A8B0EC2738F4E611D594E83F366C712E6ED38B83F37685404FAD65B830BDC83C1D3C5979266C626AE8801E13752A3CE3B45816C3C920CDA3CFE6EEA8F8440DF279D14AE8E5FC146CE5E731E80A355BECDAAA4875BAFB7A153262AAB2930AD06C6E9AE984612B17FE1911C631C7F23554AA154A732E2FE59514A3A2C79E54B55E3E42B18F7898D9C06A0F4BADD980E08E7DD742D433E925AFBA9D6C7E7A8C73072E3AFCA4A8E2BA5DC484D7BCC2486CD961686BA9B55F417A291940991D720C844DB909392DC05EEE6C7AA24BEFE1B378583D5388BF00FF3B107864C909868982D5A9CF2698234C8810746B27B4FE7F7B78D6E2D0614B4A2853CA19A5E60CD429CB11D4023E9A63D65E1E110C0E37CF3C3AA787795B5B42AEB41637A0949CAB4545DCB84D0A908CE7FD5D11E7CBFA635F295C97E1AF349BA588D4239075E0C8E1FEF4A3731B586DF07689F736DA73C95D3D56A0BE247D9D80BC555455DC0835D5EC89BDD29DD7DBDE111612FE6FD42B8FA54EE541A554BAA20B045F3FACD50C486F9272B53B3C6C4E48113F6D1809CBF16A391A444F8898DFA78576846AF5156BA6C8B733D5058BC03AD6D1550756368D6DC3BD6E3A0B8CB8B143B54C674997FD7A6B574C95D92A7352AE39293124BC3D19DDB145D33AE943D8B1C7A3B2C62F93ECFB1646D4CFA51308B0074E0D569427D3C60A4CC59F8A3862595620AA298B6F4C32C1D789FB56777BB4F8AB75D8F75CC177EEF715BCDAE1FDB8D54BE2F913544DF2F78AC9481808A929CC3E1880BEB8667F9BF1D55CCB513FF5D5AA95A6BB72EF29BA24371AC5EC694E0ED23716D02E33A37C197209BD7E10E5F86BC04037B28CA1826396A823E22CFCF129B77A3ED3BFF80D88BC9BFEA9EEFD9FD68994188B961CFB75F8D2298AA88DAABDEC2787C73D24D72E3FD6EB5B55EC16A19FB6FAB3EA08EFBDD95926273DC12961287713496B1E523C64F2ECD237313469CF7D1496F18D6288E3C326BD185143E510C1EC083E56C35A150E17C763921A84017DED18B37372C4437DB8F913C93E70411B0D50E0C6E7E4CB455226D5B5F9E4D4A03A60B0034A8A141E723072A9875BD6FA4202BE4400000003C665BB7AC12EBF8BD80A918E3687DBA06AEFD1B0005C5D3069FA6656950A891CB2ABB1C0DFB766AAD563BB829FC712B3A523644B70CE2D9EEB4DE6A1C7BF719</Password>
             </Configuration>
             <Annotation DisplayMode="0">
               <Name />
@@ -540,11 +530,11 @@ Should be identical to output of Prediction tool on same data</Text>
         </Node>
         <Node ToolID="17">
           <GuiSettings Plugin="AlteryxBasePluginsGui.BrowseV2.BrowseV2">
-            <Position x="1159" y="154" />
+            <Position x="1159" y="159" />
           </GuiSettings>
           <Properties>
             <Configuration>
-              <TempFile>C:\Users\ADMINI~1\AppData\Local\Temp\2\Engine_5048_a616ff1aec6a476586142a17b12c7db6_\Engine_6728_cc963c799e764136a672e7881d3b687a_.yxdb</TempFile>
+              <TempFile>C:\Users\ADMINI~1.EC2\AppData\Local\Temp\2\Engine_5536_ec4c128b48b244b29d1d7662a40950a7_\Engine_4144_b71b83b69fd84ba8bccf3d7ac972b4e9_.yxdb</TempFile>
               <TempFileDataProfiling />
               <Layout>
                 <ViewMode>Single</ViewMode>
@@ -568,7 +558,7 @@ Should be identical to output of Prediction tool on same data</Text>
         </Node>
         <Node ToolID="26">
           <GuiSettings Plugin="AlteryxGuiToolkit.TextBox.TextBox">
-            <Position x="1027" y="98.00002" width="144" height="36" />
+            <Position x="1027" y="103" width="144" height="36" />
           </GuiSettings>
           <Properties>
             <Configuration>
@@ -615,7 +605,7 @@ Should be identical to output of Prediction tool on same data</Text>
       <Destination ToolID="11" Connection="Left" />
     </Connection>
     <Connection Wireless="True">
-      <Origin ToolID="6" Connection="Predictions" />
+      <Origin ToolID="12" Connection="Data" />
       <Destination ToolID="11" Connection="Right" />
     </Connection>
     <Connection>
@@ -677,7 +667,7 @@ Should be identical to output of Prediction tool on same data</Text>
     <LayoutType>Horizontal</LayoutType>
     <MetaInfo>
       <NameIsFileName value="True" />
-      <Name>h2oai_sample_workflow</Name>
+      <Name>h2oai_public_sample_workflow</Name>
       <Description />
       <RootToolName />
       <ToolVersion />
