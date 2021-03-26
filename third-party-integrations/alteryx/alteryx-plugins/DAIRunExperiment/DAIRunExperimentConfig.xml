@@ -21,7 +21,7 @@ A model key that can be consumed by other Driverless AI tools
       </Description>
       <CategoryName>Predictive</CategoryName>
       <SearchTags>driverlessai, driverless, h2o, machine learning, learning</SearchTags>
-      <ToolVersion>1.4</ToolVersion>
+      <ToolVersion>1.5</ToolVersion>
       <Author>H2O.AI</Author>
       <Company>H2O.AI</Company>
       <Copyright>2021</Copyright>

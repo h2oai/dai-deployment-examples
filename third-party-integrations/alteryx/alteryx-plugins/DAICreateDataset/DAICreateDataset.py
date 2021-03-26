@@ -54,9 +54,33 @@ class AyxPlugin:
         # Get connection information
         base = Et.fromstring(str_xml)
         self.address = base.find('Address').text if 'Address' in str_xml else 'http://prerelease.h2o.ai'
-        username = base.find('Username').text if 'Username' in str_xml else 'h2oai'
-        password = self.alteryx_engine.decrypt_password(base.find('Password').text, 0) if 'Password' in str_xml else 'h2oai'
-        self.dai = h2oai_client.Client(address=self.address, username=username, password=password, verify=verify)
+        use_oauth = base.find('UseOAuth').text == "True" if 'UseOAuth' in str_xml else False
+
+        if use_oauth:
+            endpoint_url = base.find('EndpointURL').text \
+                if 'EndpointURL' in str_xml else 'No Endpoint URL Provided'
+            introspection_url = base.find('IntrospectionURL').text \
+                if 'IntrospectionURL' in str_xml else 'No Introspection URL Provided'
+            client_id = base.find('ClientID').text \
+                if 'ClientID' in str_xml else 'No Client ID Provided'
+            refresh_token = self.alteryx_engine.decrypt_password(base.find('RefreshToken').text, 0) \
+                if 'RefreshToken' in str_xml else 'No Token Provided'
+            token_provider = h2oai_client.OAuth2tokenProvider(
+                refresh_token=refresh_token,
+                client_id=client_id,
+                token_endpoint_url=endpoint_url,
+                token_introspection_url=introspection_url
+            )
+            self.dai = h2oai_client.Client(
+                address=self.address,
+                token_provider=token_provider.ensure_fresh_token,
+                verify=verify,
+            )
+        else:
+            username = base.find('Username').text if 'Username' in str_xml else 'h2oai'
+            password = self.alteryx_engine.decrypt_password(base.find('Password').text, 0) \
+                if 'Password' in str_xml else 'h2oai'
+            self.dai = h2oai_client.Client(address=self.address, username=username, password=password, verify=verify)
 
         # Valid target name checks.
         if self.data_source is None:
