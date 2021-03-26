@@ -43,3 +43,11 @@ Assuming all files are properly defined and generated:
     - NOTE: make sure to enter into the directory and then create the archive of all
     files inside of the directory
 2. rename the resultant zip archive to `.yxi` file format. This will make it identifiable by Alteryx
+
+## OAuth Configuration:
+
+* To setup OAuth authentication mode, you can enable the `Use OAuth` option. You will then need to fill up the following boxes:
+    - `Token Endpoint URL`, taken from the config.toml value: `oauth2_client_tokens_token_url`
+    - `Token Introspection URL` taken from the config.toml value: `oauth2_client_tokens_introspection_url`
+    - `Client ID` taken from the config.toml value: `oauth2_client_tokens_client_id`
+    - `Refresh Token` generated from the DriverlessAI UI under the Resources, then API TOKEN section from the top menu.
