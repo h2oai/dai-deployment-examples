@@ -17,16 +17,36 @@
         <ayx data-ui-props="{type: 'TextBox'}" data-item-props="{dataName: 'Address'}"></ayx>
       </div>
       <div class='leftCon'>
+        <label>XMSG("Use OAuth")</label>
+        <ayx data-ui-props="{type: 'CheckBox'}" data-item-props="{dataName: 'UseOAuth'}"></ayx>
+      </div>
+      <div class='leftCon'>
         <label>XMSG("Use HTTPS")</label>
         <ayx data-ui-props="{type: 'CheckBox'}" data-item-props="{dataName: 'UseHttps'}"></ayx>
       </div>
-      <div class='leftCon'>
+      <div class='leftCon' id='usernameBox'>
         <label>XMSG("Username")</label>
         <ayx data-ui-props="{type: 'TextBox'}" data-item-props="{dataName: 'Username'}"></ayx>
       </div>
-      <div class='leftCon'>
+      <div class='leftCon' id='passwordBox'>
         <label>XMSG("Password")</label>
         <ayx data-ui-props="{type: 'TextBox'}" data-item-props="{dataName: 'Password', password: true, encryptionMode: 'machine'}"></ayx>
+      </div>
+      <div class='leftCon' id='endpointURL'>
+        <label>XMSG("Token Endpoint URL")</label>
+        <ayx data-ui-props="{type: 'TextBox'}" data-item-props="{dataName: 'EndpointURL'}"></ayx>
+      </div>
+      <div class='leftCon' id='introspectionURL'>
+        <label>XMSG("Token Introspection URL")</label>
+        <ayx data-ui-props="{type: 'TextBox'}" data-item-props="{dataName: 'IntrospectionURL'}"></ayx>
+      </div>
+      <div class='leftCon' id='clientID'>
+        <label>XMSG("Client ID")</label>
+        <ayx data-ui-props="{type: 'TextBox'}" data-item-props="{dataName: 'ClientID'}"></ayx>
+      </div>
+      <div class='leftCon' id='refreshToken'>
+        <label>XMSG("Refresh Token")</label>
+        <ayx data-ui-props="{type: 'TextBox'}" data-item-props="{dataName: 'RefreshToken', password: true, encryptionMode: 'machine'}"></ayx>
       </div>
       <div class='rightCon'>
         <label>XMSG("Model ID")</label>
@@ -35,10 +55,7 @@
     </fieldset>
   </form>
 
-  <script type="text/javascript">
-
-    Alteryx.Gui.BeforeLoad = function (manager, AlteryxDataItems, json) {
-    }
+  <script type="text/javascript" src="DAIPredictEngine.js">
 
   </script>
 
