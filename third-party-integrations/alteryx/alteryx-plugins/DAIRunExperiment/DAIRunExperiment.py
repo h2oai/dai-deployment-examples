@@ -1,9 +1,12 @@
-import AlteryxPythonSDK as Sdk
-import xml.etree.ElementTree as Et
-import h2oai_client
 import csv
-import webbrowser
 import os
+import keycloak
+import webbrowser
+import xml.etree.ElementTree as Et
+from urllib.parse import urljoin
+
+import AlteryxPythonSDK as Sdk
+import h2oai_client
 import pandas as pd
 
 
@@ -79,9 +82,48 @@ class AyxPlugin:
         # Get connection information
         base = Et.fromstring(str_xml)
         self.addr = base.find('Address').text if 'Address' in str_xml else 'http://prerelease.h2o.ai'
+
         username = base.find('Username').text if 'Username' in str_xml else 'h2oai'
-        password = self.alteryx_engine.decrypt_password(base.find('Password').text, 0) if 'Password' in str_xml else 'h2oai'
-        self.dai = h2oai_client.Client(address=self.addr, username=username, password=password, verify=verify)
+        password = self.alteryx_engine.decrypt_password(base.find('Password').text, 0) \
+            if 'Password' in str_xml else 'h2oai'
+        use_keycloak = base.find('UseKeycloak').text == "True" if 'UseKeycloak' in str_xml else False
+
+        if use_keycloak:
+            keycloak_server_url = base.find('keycloakServerURL').text \
+                if 'keycloakServerURL' in str_xml else 'No Keycloak Server URL Provided'
+            keycloak_token_endpoint = base.find('keycloakTokenEndpoint').text \
+                if 'keycloakTokenEndpoint' in str_xml else 'No Keycloak Token Enpoint Provided'
+            keycloak_realm = base.find('keycloakRealm').text \
+                if 'keycloakRealm' in str_xml else 'No Keycloak Realm Provided'
+            public_client_id = base.find('ClientID').text \
+                if 'ClientID' in str_xml else 'No Client ID Provided'
+
+            keycloak_openid = keycloak.KeycloakOpenID(
+                server_url=urljoin(keycloak_server_url, "/auth/"),
+                client_id=public_client_id,
+                realm_name=keycloak_realm,
+            )
+
+            token = keycloak_openid.token(
+                username, password
+            )
+            refresh_token = keycloak_openid.refresh_token(
+                token["refresh_token"],
+            )
+
+            token_provider = h2oai_client.OAuth2tokenProvider(
+                refresh_token=refresh_token["refresh_token"],
+                client_id=public_client_id,
+                token_endpoint_url=keycloak_token_endpoint,
+                token_introspection_url=urljoin(keycloak_token_endpoint, "/introspect"),
+            )
+            self.dai = h2oai_client.Client(
+                address=self.addr,
+                token_provider=token_provider.ensure_fresh_token,
+                verify=verify,
+            )
+        else:
+            self.dai = h2oai_client.Client(address=self.addr, username=username, password=password, verify=verify)
 
         # Valid target name checks.
         if self.target_name is None:
@@ -138,8 +180,15 @@ class AyxPlugin:
         Called after all records have been processed.
         :param b_has_errors: Set to true to not do the final processing.
         """
-        params = self.dai.get_experiment_tuning_suggestion(self.train, self.target_name, self.is_classification,
-                                                           self.is_timeseries, self.config_string)
+        params = self.dai.get_experiment_tuning_suggestion(
+            dataset_key=self.train,
+            target_col=self.target_name,
+            is_classification=self.is_classification,
+            is_time_series=self.is_timeseries,
+            config_overrides=self.config_string,
+            cols_to_drop=[],
+            is_image=False
+        )
         params.accuracy = self.accuracy
         params.time = self.time
         params.interpretability = self.interpretability
