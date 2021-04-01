@@ -17,6 +17,10 @@
         <ayx data-ui-props="{type: 'TextBox'}" data-item-props="{dataName: 'Address'}"></ayx>
       </div>
       <div class='leftCon'>
+        <label>XMSG("Use Keycloak")</label>
+        <ayx data-ui-props="{type: 'CheckBox'}" data-item-props="{dataName: 'UseKeycloak'}"></ayx>
+      </div>
+      <div class='leftCon'>
         <label>XMSG("Use HTTPS")</label>
         <ayx data-ui-props="{type: 'CheckBox'}" data-item-props="{dataName: 'UseHttps'}"></ayx>
       </div>
@@ -27,6 +31,22 @@
       <div class='leftCon'>
         <label>XMSG("Password")</label>
         <ayx data-ui-props="{type: 'TextBox'}" data-item-props="{dataName: 'Password', password: true, encryptionMode: 'machine'}"></ayx>
+      </div>
+      <div class='leftCon' id='keycloakServerURL'>
+        <label>XMSG("Keycloak Server URL")</label>
+        <ayx data-ui-props="{type: 'TextBox'}" data-item-props="{dataName: 'keycloakServerURL'}"></ayx>
+      </div>
+      <div class='leftCon' id='keycloakTokenEndpoint'>
+        <label>XMSG("Keycloak Token Endpoint")</label>
+        <ayx data-ui-props="{type: 'TextBox'}" data-item-props="{dataName: 'keycloakTokenEndpoint'}"></ayx>
+      </div>
+      <div class='leftCon' id='keycloakRealm'>
+        <label>XMSG("Keycloak Realm Name")</label>
+        <ayx data-ui-props="{type: 'TextBox'}" data-item-props="{dataName: 'keycloakRealm'}"></ayx>
+      </div>
+      <div class='leftCon' id='clientID'>
+        <label>XMSG("Public Client ID")</label>
+        <ayx data-ui-props="{type: 'TextBox'}" data-item-props="{dataName: 'ClientID'}"></ayx>
       </div>
       <div class='leftCon'>
         <label>XMSG("Data Import Source")</label>

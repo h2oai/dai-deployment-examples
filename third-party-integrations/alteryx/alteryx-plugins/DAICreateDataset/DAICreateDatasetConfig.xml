@@ -20,10 +20,10 @@ This is the primary method of getting data into Driverless AI.
       </Description>
       <CategoryName>Predictive</CategoryName>
       <SearchTags>driverlessai, driverless, h2o, machine learning, learning</SearchTags>
-      <ToolVersion>1.1</ToolVersion>
+      <ToolVersion>1.3</ToolVersion>
       <Author>H2O.AI</Author>
       <Company>H2O.AI</Company>
-      <Copyright>2019</Copyright>
+      <Copyright>2021</Copyright>
     </MetaInfo>
   </Properties>
 </AlteryxJavaScriptPlugin>

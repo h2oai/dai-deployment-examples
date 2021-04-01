@@ -1,11 +1,14 @@
-import AlteryxPythonSDK as Sdk
-import xml.etree.ElementTree as Et
-import h2oai_client
 import csv
-from pathlib import Path
 import os
+import keycloak
 import webbrowser
+import xml.etree.ElementTree as Et
+from pathlib import Path
 from time import sleep
+from urllib.parse import urljoin
+
+import AlteryxPythonSDK as Sdk
+import h2oai_client
 
 
 class AyxPlugin:
@@ -53,9 +56,48 @@ class AyxPlugin:
         # Get connection information
         base = Et.fromstring(str_xml)
         self.address = base.find('Address').text if 'Address' in str_xml else 'http://prerelease.h2o.ai'
+
         username = base.find('Username').text if 'Username' in str_xml else 'h2oai'
-        password = self.alteryx_engine.decrypt_password(base.find('Password').text, 0) if 'Password' in str_xml else 'h2oai'
-        self.dai = h2oai_client.Client(address=self.address, username=username, password=password, verify=verify)
+        password = self.alteryx_engine.decrypt_password(base.find('Password').text, 0) \
+            if 'Password' in str_xml else 'h2oai'
+        use_keycloak = base.find('UseKeycloak').text == "True" if 'UseKeycloak' in str_xml else False
+
+        if use_keycloak:
+            keycloak_server_url = base.find('keycloakServerURL').text \
+                if 'keycloakServerURL' in str_xml else 'No Keycloak Server URL Provided'
+            keycloak_token_endpoint = base.find('keycloakTokenEndpoint').text \
+                if 'keycloakTokenEndpoint' in str_xml else 'No Keycloak Token Enpoint Provided'
+            keycloak_realm = base.find('keycloakRealm').text \
+                if 'keycloakRealm' in str_xml else 'No Keycloak Realm Provided'
+            public_client_id = base.find('ClientID').text \
+                if 'ClientID' in str_xml else 'No Client ID Provided'
+
+            keycloak_openid = keycloak.KeycloakOpenID(
+                server_url=urljoin(keycloak_server_url, "/auth/"),
+                client_id=public_client_id,
+                realm_name=keycloak_realm,
+            )
+
+            token = keycloak_openid.token(
+                username, password
+            )
+            refresh_token = keycloak_openid.refresh_token(
+                token["refresh_token"],
+            )
+
+            token_provider = h2oai_client.OAuth2tokenProvider(
+                refresh_token=refresh_token["refresh_token"],
+                client_id=public_client_id,
+                token_endpoint_url=keycloak_token_endpoint,
+                token_introspection_url=urljoin(keycloak_token_endpoint, "/introspect"),
+            )
+            self.dai = h2oai_client.Client(
+                address=self.address,
+                token_provider=token_provider.ensure_fresh_token,
+                verify=verify,
+            )
+        else:
+            self.dai = h2oai_client.Client(address=self.address, username=username, password=password, verify=verify)
 
         # Valid target name checks.
         if self.data_source is None:
