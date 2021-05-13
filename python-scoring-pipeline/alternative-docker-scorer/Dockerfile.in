@@ -1,0 +1,71 @@
+FROM ubuntu:bionic
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Install base dependencies
+RUN \
+    apt-get update && \
+    apt install -y \
+        build-essential \
+        libmagic-dev \
+        git \
+        locales \
+        unzip \
+        wget \
+        python3.6 \
+        python3.6-dev \
+        python3-pip \
+        python3-dev \
+        python-virtualenv \
+        python3-virtualenv \
+        libopenblas-dev \
+        ocl-icd-libopencl1
+        
+# Install OpenCL
+RUN \
+    mkdir -p /etc/OpenCL/vendors && \
+    echo "libnvidia-opencl.so.1" > /etc/OpenCL/vendors/nvidia.icd
+    
+# Install Thrift compiler
+RUN \
+    apt-get install -y \
+        automake \
+        bison \
+        flex \
+        g++ \
+        git \
+        libevent-dev \
+        libssl-dev \
+        libtool \
+        make \
+        pkg-config \
+        libboost-all-dev \
+        ant && \
+    wget https://github.com/apache/thrift/archive/0.10.0.tar.gz && \
+    tar -xvf 0.10.0.tar.gz && \
+    cd thrift-0.10.0 && \
+    ./bootstrap.sh && \
+    ./configure && \
+    make && \
+    make install && \
+    ldconfig /usr/local/lib
+    
+RUN locale-gen en_US.UTF-8
+ENV LANG en_US.UTF-8
+ENV LANGUAGE en_US:en
+ENV LC_ALL en_US.UTF-8
+ENV HOME /root
+
+WORKDIR $HOME
+
+COPY payload/scorer.zip ./
+COPY payload/license.sig .driverlessai/
+
+RUN unzip scorer.zip
+
+WORKDIR scoring-pipeline
+
+ENV SCORING_PIPELINE_INSTALL_DEPENDENCIES 1
+
+# Run script `run_example.sh` to pre-generate python environment to run example.py in
+RUN bash run_example.sh
